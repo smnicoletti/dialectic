@@ -1,15 +1,42 @@
-# Dialectic
+<h1 align="center">Dialectic</h1>
 
-Dialectic is a Lean-native controlled language for reconstructing philosophical
-arguments. A notebook records the source passage, the author's paraphrase, the
-formal meaning assigned to each claim, the deduction, and any alternative
-reading. Lean checks the declared deduction in the standard VS Code Infoview.
+<p align="center"><strong>A Lean-native controlled language for reconstructing philosophical arguments</strong></p>
 
-Dialectic verifies derivability under the selected reconstruction and logic
-profile. It does not verify the truth of a premise, the accuracy of a
-translation, or the historical fidelity of an interpretation.
+<p align="center">
+  <a href="lean-toolchain"><img alt="Lean 4.32.1" src="https://img.shields.io/badge/Lean-4.32.1-0f4c81"></a>
+  <a href="lakefile.lean"><img alt="Dialectic 0.1.0" src="https://img.shields.io/badge/Dialectic-0.1.0-555555"></a>
+  <a href="LICENSE"><img alt="AGPL-3.0-or-later" src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=leanprover.lean4"><img alt="Standard Lean VS Code extension" src="https://img.shields.io/badge/editor-standard%20Lean%20VS%20Code-informational"></a>
+</p>
 
-## Start in VS Code
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#reasoning-profiles">Reasoning profiles</a> ·
+  <a href="#philosophical-examples">Philosophical examples</a> ·
+  <a href="#alternatives-objections-and-negative-evidence">Diagnostics</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+Dialectic notebooks keep source provenance, paraphrases, controlled formal
+meanings, deductions, alternatives, and objections in one readable Lean file.
+The standard Lean extension parses the notebook and reports source-located
+results in the VS Code Infoview.
+
+> [!IMPORTANT]
+> **Verification boundary.** Dialectic verifies derivability under the selected
+> reconstruction and logic profile. It does not verify premise truth,
+> translation accuracy, or historical and interpretive fidelity.
+
+| Author writes | Dialectic checks | Reader sees |
+| --- | --- | --- |
+| Source-linked claims, controlled meanings, and named deduction steps | Lean elaboration and kernel checking under one declared profile | Accepted deductions, explicit deltas, recheck results, and bounded negative evidence |
+
+```text
+Source passage → Paraphrase → Controlled meaning → Lean check → Infoview result
+                       ↘ Interpretation choices and objections remain visible
+```
+
+## Quick start
 
 1. Install [Elan](https://github.com/leanprover/elan) and the standard Lean 4
    VS Code extension.
@@ -19,6 +46,12 @@ translation, or the historical fidelity of an interpretation.
 
 No Python program, external parser, generated Lean file, or custom editor
 extension is required.
+
+To check the complete project from a terminal:
+
+```sh
+lake build
+```
 
 ## Notebook structure
 
@@ -130,12 +163,13 @@ Rejection means that these deduction steps no longer type-check under the
 alternative declarations. It does not show that the conclusion has no other
 proof.
 
-See:
+Complete CoreLogic examples:
 
-- `Dialectic/Examples/GalileoShip.lean`, a bounded reconstruction of Galileo's
-  below-decks ship argument;
-- `Dialectic/Examples/GettierCounterexample.lean`, a coarse reconstruction of
-  the justified-true-belief analysis and a finite counterexample.
+- [`GalileoShip.lean`](Dialectic/Examples/GalileoShip.lean), a bounded
+  reconstruction of Galileo's below-decks ship argument;
+- [`GettierCounterexample.lean`](Dialectic/Examples/GettierCounterexample.lean),
+  a coarse reconstruction of the justified-true-belief analysis and a finite
+  counterexample.
 
 ### ModalK
 
@@ -181,9 +215,11 @@ classifies that model and asks Lean to check the generated evidence.
 `ModalK` assumes no reflexivity, symmetry, transitivity, or Euclidean frame
 condition. The current analyzer does not construct or search for models.
 
-See `Dialectic/Examples/ModalOntologicalArgument.lean`, a deliberately bounded
-K-level reconstruction inspired by Plantinga's modal argument. It excludes the
-S5-specific structure of Plantinga's argument and says so in the notebook.
+See
+[`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean),
+a deliberately bounded K-level reconstruction inspired by Plantinga's modal
+argument. The notebook excludes the S5-specific structure of Plantinga's
+argument.
 
 ### Counterfactual
 
@@ -219,8 +255,9 @@ The profile evaluates a conditional at the declared selected situations. It
 does not treat the conditional as material implication, infer which situations
 are closest, or implement unrestricted Lewis/Stalnaker semantics.
 
-See `Dialectic/Examples/CounterfactualMatch.lean`, an original match scenario
-informed by David Lewis's *Counterfactuals*.
+See
+[`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean), an
+original match scenario informed by David Lewis's *Counterfactuals*.
 
 ## Alternatives, objections, and negative evidence
 
@@ -253,14 +290,12 @@ available in the collapsed Infoview section.
 
 The public examples contain original paraphrases and explicit provenance:
 
-- `GalileoShip.lean`: Galileo, *Dialogue Concerning the Two Chief World
-  Systems*, Second Day;
-- `GettierCounterexample.lean`: Gettier, "Is Justified True Belief
-  Knowledge?", Case I;
-- `ModalOntologicalArgument.lean`: a bounded K reconstruction inspired by
-  Plantinga, *The Nature of Necessity*, chapter 10;
-- `CounterfactualMatch.lean`: an original match scenario informed by Lewis,
-  *Counterfactuals*.
+| Notebook | Profile | Philosophical basis | Demonstrated comparison |
+| --- | --- | --- | --- |
+| [`GalileoShip.lean`](Dialectic/Examples/GalileoShip.lean) | `CoreLogic` | Galileo, *Dialogue Concerning the Two Chief World Systems*, Second Day | A scope change rejects the preserved two-step deduction |
+| [`GettierCounterexample.lean`](Dialectic/Examples/GettierCounterexample.lean) | `CoreLogic` | Gettier, "Is Justified True Belief Knowledge?", Case I | A finite countermodel certifies non-entailment |
+| [`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean) | `ModalK` | A bounded subargument inspired by Plantinga, *The Nature of Necessity*, chapter 10 | Possibility replaces necessity; declared-model analysis finds a counterexample |
+| [`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean) | `Counterfactual` | An original match scenario informed by Lewis, *Counterfactuals* | A damp-match reading rejects the preserved deduction and model analysis certifies non-entailment |
 
 None is presented as a settled translation. `CORPUS.md` records source
 locations, access status, intended formal features, and unresolved
@@ -293,6 +328,15 @@ DESIGN.md          # implementation and semantic design
 CORPUS.md          # source and evaluation records
 ```
 
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [README](README.md) | Author workflow, profiles, examples, and result interpretation |
+| [Design specification](DESIGN.md) | Grammar, semantics, architecture, diagnostics, and implementation limits |
+| [Calibration corpus](CORPUS.md) | Source provenance, passage boundaries, and evaluation cases |
+| [Contributing](CONTRIBUTING.md) | Development requirements, example policy, licensing, and contacts |
+
 ## Current limits
 
 - CoreLogic supports one domain type and unary-predicate argument forms.
@@ -306,3 +350,17 @@ CORPUS.md          # source and evaluation records
   modal model synthesis, or counterfactual similarity search.
 - Lean checks formal consequences of declared choices. Readers must still
   assess the premises, paraphrases, source boundaries, and interpretation.
+
+## Contributing and license
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before
+opening a pull request and run `lake build` before submission.
+
+Dialectic is available under the
+[GNU Affero General Public License v3.0 or later](LICENSE). Separate commercial
+licensing may be available from the copyright holders.
+
+Project contacts:
+
+- Stefano Maria Nicoletti — <stefano@duck.com>
+- Edoardo Putti — <edoardo.putti@gmail.com>
