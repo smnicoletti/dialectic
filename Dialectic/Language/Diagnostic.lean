@@ -16,6 +16,7 @@ inductive DiagnosticCategory where
   | vocabulary
   | model
   | profile
+  | deductionState
   | deductionAccepted
   | deductionRejected
   | preservedAccepted
@@ -37,6 +38,7 @@ def DiagnosticCategory.code : DiagnosticCategory → String
   | .vocabulary => "VOCAB"
   | .model => "MODEL"
   | .profile => "PROFILE"
+  | .deductionState => "DEDUCTION/STATE"
   | .deductionAccepted => "CHECK/ACCEPTED"
   | .deductionRejected => "CHECK/REJECTED"
   | .preservedAccepted => "RECHECK/ACCEPTED"

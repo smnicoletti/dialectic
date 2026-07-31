@@ -183,17 +183,82 @@ private def parseStep (stx : Syntax) : CommandElabM DeductionStep :=
       }
   | _ => throwParseErrorAt stx "malformed deduction Step"
 
+private def parseStepSequence
+    (steps : Array Syntax) :
+    CommandElabM (Array DeductionStep × Option Syntax) := do
+  let mut parsed := #[]
+  let mut marker? : Option Syntax := Option.none
+  for step in steps do
+    match step with
+    | `(cnlStep| Step) =>
+        if marker?.isSome then
+          throwParseErrorAt step
+            "a draft Deduction may contain only one bare Step marker"
+        marker? := Option.some step
+    | _ =>
+        if marker?.isSome then
+          throwParseErrorAt step
+            "the bare Step marker must be the final item in a draft Deduction"
+        parsed := parsed.push (← parseStep step)
+  pure (parsed, marker?)
+
 private def parseDeduction (stx : Syntax) :
     CommandElabM Dialectic.Deduction := do
   match stx with
   | `(cnlDeduction|
       Deduction $name:ident
         $steps:cnlStep*
-      End deduction) =>
-      let parsed ← steps.mapM parseStep
-      if parsed.isEmpty then
+      End deduction) => do
+      let (parsed, marker?) ← parseStepSequence steps
+      if let Option.some marker := marker? then
+        pure {
+          name := name.getId
+          steps := parsed
+          stateRef? := Option.some marker
+          draftMarker := .chooseStep
+          ref := stx
+        }
+      else if parsed.isEmpty then
         throwParseErrorAt stx "Deduction must contain at least one Step"
-      pure { name := name.getId, steps := parsed, ref := stx }
+      else
+        pure { name := name.getId, steps := parsed, ref := stx }
+  | `(cnlDeduction|
+      Deduction $name:ident
+        Goal $conclusion:ident
+        $steps:cnlStep*
+      End deduction) => do
+      let (parsed, marker?) ← parseStepSequence steps
+      if let Option.some marker := marker? then
+        pure {
+          name := name.getId
+          steps := parsed
+          intendedConclusion? := Option.some conclusion.getId
+          stateRef? := Option.some marker
+          draftMarker := .chooseStep
+          ref := stx
+        }
+      else if parsed.isEmpty then
+        throwParseErrorAt stx "a completed Goal deduction must contain a Step"
+      else
+        pure {
+          name := name.getId
+          steps := parsed
+          intendedConclusion? := Option.some conclusion.getId
+          ref := stx
+        }
+  | `(cnlDeduction|
+      Deduction $name:ident
+        Goal $conclusion:ident
+        $steps:cnlStep*
+        $continueRef:cnlContinue
+      End deduction) =>
+      pure {
+        name := name.getId
+        steps := ← steps.mapM parseStep
+        intendedConclusion? := Option.some conclusion.getId
+        stateRef? := Option.some continueRef
+        ref := stx
+      }
   | _ => throwParseErrorAt stx "malformed Deduction"
 
 private def parseReconstruction

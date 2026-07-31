@@ -1,8 +1,10 @@
 import Dialectic.Language
+import Dialectic.Examples.GalileoShipDraft
 import Dialectic.Examples.GalileoShip
 import Dialectic.Examples.GettierCounterexample
 import Dialectic.Examples.ModalOntologicalArgument
 import Dialectic.Examples.CounterfactualMatch
+import Dialectic.Examples.CounterfactualMatchDraft
 import Dialectic.Tests.ResponsibleAction
 import Dialectic.Tests.GalileoShip
 import Dialectic.Tests.GettierCounterexample
@@ -10,6 +12,9 @@ import Dialectic.Tests.ModalK
 import Dialectic.Tests.Counterfactual
 import Dialectic.Tests.ExtendedProfileValidation
 import Dialectic.Tests.Diagnostics
+import Dialectic.Tests.DeductionState
+import Dialectic.Tests.InteractiveCodeAction
+import Dialectic.Tests.InteractiveBareStepCodeAction
 import Dialectic.Tests.InconsistentAlternative
 import Dialectic.Tests.EvidenceOutcomes
 import Dialectic.Tests.CountermodelValidation

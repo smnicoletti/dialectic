@@ -58,12 +58,23 @@ syntax "Claim" ident "from" ident "sentence" num ppLine
   "End" "claim" : cnlClaim
 
 declare_syntax_cat cnlStep
-syntax "Step" ident ppLine
-  "From" ident "and" ident "conclude" ident : cnlStep
+syntax "Step"
+  (ident ppLine "From" ident "and" ident "conclude" ident)? : cnlStep
 
 declare_syntax_cat cnlDeduction
+declare_syntax_cat cnlContinue
+syntax "Continue" "deduction" : cnlContinue
 syntax "Deduction" ident ppLine
   cnlStep+
+  "End" "deduction" : cnlDeduction
+syntax "Deduction" ident ppLine
+  "Goal" ident ppLine
+  cnlStep+
+  "End" "deduction" : cnlDeduction
+syntax "Deduction" ident ppLine
+  "Goal" ident ppLine
+  cnlStep*
+  cnlContinue ppLine
   "End" "deduction" : cnlDeduction
 
 declare_syntax_cat cnlReconstruction

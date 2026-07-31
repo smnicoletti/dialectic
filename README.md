@@ -96,6 +96,82 @@ connects one source sentence to a paraphrase and a controlled formal meaning.
 Lean reports undeclared vocabulary, wrong domains, missing source locations,
 and profile-specific syntax at the relevant source range.
 
+## Guided deduction editing
+
+Start a deduction with a bare `Step` when you want Dialectic to show the
+currently supported moves:
+
+```text
+Deduction CounterfactualConsequence
+  Step
+End deduction
+```
+
+This is a grammar-valid draft, not a malformed completed deduction. Place the
+cursor on `Step`. The standard Lean Infoview displays **Choose the next
+deduction step**, the declared claims and source references, and only the moves
+implemented by the selected profile. In
+[`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean),
+the standard Quick Fix inserts:
+
+```text
+Goal Conclusion
+Step ConclusionFollows
+  From C1 and C2 conclude Conclusion
+```
+
+Lean then re-elaborates and checks the completed deduction. If no implemented
+move applies, the panel says so and offers no action.
+
+[`GalileoShipDraft.lean`](Dialectic/Examples/GalileoShipDraft.lean) shows a
+second editing mode for a deduction whose goal and accepted prefix are already
+written:
+
+```text
+Deduction ShipComparison
+  Goal Conclusion
+  Step OutcomeBridge
+    From P1 and P2 conclude DescribedOutcome
+  Continue deduction
+End deduction
+```
+
+Place the cursor on `Continue deduction`. The Infoview displays a
+**Deduction state** with:
+
+- the selected profile and intended conclusion;
+- premises in scope, with paraphrases and source references;
+- results established by Lean-checked draft steps; and
+- the next moves implemented by that profile.
+
+For this draft, CoreLogic proposes:
+
+```text
+Step ConclusionFollows
+  From DescribedOutcome and P3 conclude Conclusion
+```
+
+The proposal is not a proof result. With the cursor still on
+`Continue deduction`, open the standard VS Code Quick Fix menu and choose
+`Dialectic: add Step ConclusionFollows`. Lean applies a versioned edit to that
+marker only. A step that reaches `Goal` closes the draft; Lean then
+re-elaborates and checks the completed deduction. An intermediate step retains
+`Continue deduction` for the next cycle.
+
+The language server refuses a versioned edit after the document has changed.
+Re-elaboration computes a fresh state and fresh actions. If the current
+profile has no implemented move to the goal, the panel says so without
+claiming non-entailment. CoreLogic suggests supported universal chains,
+ModalK suggests box modus ponens, and Counterfactual suggests only its
+shared-selection consequence rule.
+
+This interaction uses Lean's built-in Infoview, InfoTree, and code-action
+support. There is no custom VS Code extension and no button inside the panel:
+the actionable control is the editor's normal Quick Fix menu. Both the panel
+widget and action are attached to the source range of `Step` or
+`Continue deduction`, so they remain available while the enclosing deduction
+is incomplete but grammar-valid.
+
 ## Reasoning profiles
 
 Each reconstruction selects exactly one profile. Dialectic never transfers a
@@ -292,6 +368,8 @@ The public examples contain original paraphrases and explicit provenance:
 
 | Notebook | Profile | Philosophical basis | Demonstrated comparison |
 | --- | --- | --- | --- |
+| [`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean) | `Counterfactual` | The Lewis-inspired match reconstruction while its deduction is being written | Bare-`Step` state and a Quick Fix that inserts an explicit goal and complete step |
+| [`GalileoShipDraft.lean`](Dialectic/Examples/GalileoShipDraft.lean) | `CoreLogic` | The same bounded Galileo reconstruction | Live deduction state and a version-checked Quick Fix for the final step |
 | [`GalileoShip.lean`](Dialectic/Examples/GalileoShip.lean) | `CoreLogic` | Galileo, *Dialogue Concerning the Two Chief World Systems*, Second Day | A scope change rejects the preserved two-step deduction |
 | [`GettierCounterexample.lean`](Dialectic/Examples/GettierCounterexample.lean) | `CoreLogic` | Gettier, "Is Justified True Belief Knowledge?", Case I | A finite countermodel certifies non-entailment |
 | [`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean) | `ModalK` | A bounded subargument inspired by Plantinga, *The Nature of Necessity*, chapter 10 | Possibility replaces necessity; declared-model analysis finds a counterexample |
@@ -313,6 +391,13 @@ lake build
 The default library imports every public example and every Lean-native
 regression test. Expected warnings in the example notebooks report rejected
 alternative deductions; they do not indicate a failed build.
+
+`Dialectic/Tests/DeductionState.lean` checks state construction, profile-gated
+suggestions, source ranges, action payloads, and versioned workspace edits.
+`Dialectic/Tests/InteractiveCodeAction.lean` is a Lean language-server
+regression input for the real Quick Fix response.
+`Dialectic/Tests/InteractiveBareStepCodeAction.lean` asks the actual Lean
+server for both the panel widget and code actions at a bare `Step`.
 
 The project layout is:
 
@@ -345,6 +430,8 @@ CORPUS.md          # source and evaluation records
 - ModalK supports box modus ponens and finite declared-model analysis only.
 - Counterfactual reasoning uses one explicit selection relation and a bounded
   consequence rule.
+- Guided editing covers the deduction forms implemented by those three
+  profiles. It does not search for arbitrary proofs or invent new premises.
 - No profile provides unrestricted first-order quantifier alternation,
   equality, description logic, temporal logic, deontic logic, epistemic logic,
   modal model synthesis, or counterfactual similarity search.

@@ -1,9 +1,15 @@
 import Dialectic.Language
 
-Argument GalileoShip
+/-!
+Open this notebook with the standard Lean VS Code extension and place the
+cursor on `Continue deduction`. The Infoview shows the live deduction state.
+`GalileoShip.lean` contains the completed counterpart.
+-/
+
+Argument GalileoShipDraft
 
 Logic profile CoreLogic
-  Description "constructive unary-predicate reasoning over an explicit reconstruction"
+  Description "a work-in-progress reconstruction of the below-decks ship comparison"
 End logic
 
 Vocabulary
@@ -12,12 +18,11 @@ Vocabulary
   Predicate satisfiesStipulations describes Trial
   Predicate sameInternalOutcome describes Trial
   Predicate nonDiscriminating describes Trial
-  Relation comparedWith links Trial to Trial
 End vocabulary
 
 Source GalileoShipPassage
   Citation "Galileo Galilei, Dialogo sopra i due massimi sistemi del mondo (Florence, 1632), Second Day; original paraphrases based on the Smithsonian Libraries public-domain/CC0 scan, not a settled translation"
-  Location "Second Day, Salviati's enclosed below-decks ship comparison, from the listed internal phenomena through the conclusion for uniform nonfluctuating motion; Drake 1953 cross-locator pp. 186–187 is not reproduced"
+  Location "Second Day, Salviati's enclosed below-decks ship comparison, from the listed internal phenomena through the conclusion for uniform nonfluctuating motion"
   Sentence 1 "The described trials are conducted inside the ship and under the comparison's stipulated isolation and motion conditions."
   Sentence 2 "A trial satisfying those stipulations has the same internal outcome while the ship is at rest and while it moves uniformly without fluctuation."
   Sentence 3 "For this reconstruction, a trial with the same internal outcome in those two cases does not discriminate rest from uniform shared motion."
@@ -55,8 +60,7 @@ Reconstruction Original
     Goal Conclusion
     Step OutcomeBridge
       From P1 and P2 conclude DescribedOutcome
-    Step ConclusionFollows
-      From DescribedOutcome and P3 conclude Conclusion
+    Continue deduction
   End deduction
 End reconstruction
 

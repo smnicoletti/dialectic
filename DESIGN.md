@@ -1,7 +1,8 @@
 # Dialectic: implementation contract
 
 Status: Lean-native executable vertical slice with constructive first-order,
-relational ModalK, and bounded Counterfactual profiles.
+relational ModalK, and bounded Counterfactual profiles, plus source-located
+deduction-state guidance and versioned editor actions.
 
 ## Purpose and verification boundary
 
@@ -50,6 +51,7 @@ Reconstruction Original
   End claim
   ...
   Deduction ShipComparison
+    Goal Conclusion
     Step OutcomeBridge
       From P1 and P2 conclude DescribedOutcome
     Step DiscriminationBridge
@@ -114,7 +116,11 @@ meaning        ::= "Every" predicate noun "is" predicate
                    "then" object "is" predicate
                  | "If it were the case that" object "is" predicate ","
                    "then" object "is" ("not")? predicate
-deduction      ::= "Deduction" name step+ "End deduction"
+deduction      ::= completedDeduction | draftDeduction
+completedDeduction ::= "Deduction" name ("Goal" claimName)? step+
+                       "End deduction"
+draftDeduction ::= "Deduction" name ("Goal" claimName)? step*
+                   ("Step" | "Continue deduction") "End deduction"
 step           ::= "Step" name "From" name "and" name "conclude" name
 alternative    ::= "Alternative" name "based on" name change+
                    "Recheck the same deduction" name
@@ -144,6 +150,8 @@ Frontend.lean       -- lossless document AST with Syntax references
         |
         +--> Command.lean validates profile, vocabulary, source, names, deltas
         +--> Diagnostic.lean assigns stable categories and Infoview presentation
+        +--> DeductionState.lean derives profile-specific editing guidance
+        +--> DeductionAction.lean exposes versioned standard-editor Quick Fixes
         |
         v
 CoreLogic.lean      -- constructive first-order meaning/deduction semantics
@@ -161,7 +169,8 @@ elabTermEnsuringType -> Meta.check -> Meta.checkWithKernel
         |
         v
 source-located infoview messages + stable Lean status definitions
-        + optional standard-Infoview summary panel
+        + standard-Infoview result and deduction-state panels
+        + source-ranged, versioned LSP code actions
 ```
 
 The preserved object is `Deduction` plus its ordered `DeductionStep` AST. It is
@@ -221,6 +230,49 @@ closest-world search.
 Later deontic, epistemic, causal, temporal, or
 ethical profiles must have separate vocabularies and semantics.
 Cross-profile proof mixing is forbidden.
+
+## Editing-time deduction state
+
+An unfinished deduction is explicit in the AST. A bare `Step` asks Dialectic
+to offer supported next moves before the author has named a goal. A Quick Fix
+replaces that marker with an explicit `Goal` and complete controlled step.
+When a goal is already known, `Goal C` records it and `Continue deduction`
+marks the point for guidance after zero or more complete steps. Both markers
+carry source ranges. Normal Lean re-elaboration rebuilds the state after every
+edit. The state contains the profile, deduction, optional target, source
+references, accepted draft steps, and available moves.
+
+Draft steps are not trusted from their surface form. When a draft contains
+steps, the selected profile translates that prefix and asks Lean to elaborate
+and kernel-check it against the prefix's last conclusion. Only an accepted
+prefix contributes derived claims to later suggestions. A rejected prefix is
+shown as requiring correction and produces no next-step action.
+
+The suggestion relation mirrors the implemented fragment:
+
+| Profile | Suggested move |
+| --- | --- |
+| `CoreLogic` | compose `Every A noun is B` with `Every B noun is C` or `Every B noun is not C` |
+| `ModalK` | combine a boxed implication with the matching boxed antecedent |
+| `Counterfactual` | compose two conditionals interpreted over the same declared selection relation |
+
+No other move is proposed. In particular, an empty suggestion set is guidance
+about this bounded rule set, not proof of non-entailment.
+
+`DeductionAction.lean` stores each action payload in Lean's InfoTree at the
+bare `Step` or `Continue deduction` range. A registered standard language-server
+`CodeActionProvider` returns a `WorkspaceEdit` containing the current
+`VersionedTextDocumentIdentifier`. The edit replaces only that marker with
+the displayed controlled syntax. At a bare `Step`, the replacement adds an
+explicit goal and a complete step. At `Continue deduction`, an intermediate
+move retains the marker, while a move reaching `Goal` removes it. The resulting
+completed block enters the ordinary checking path on re-elaboration. If the
+document version has changed, the Lean client does not apply the stale edit.
+
+The Infoview panel itself is read-only. Users invoke the action through VS
+Code's standard Quick Fix menu at the marker. This avoids an editor-specific
+JavaScript bridge while still providing a genuine one-action insertion path
+with the stock Lean extension.
 
 ## Result model
 
@@ -310,6 +362,7 @@ generated Lean errors as the product vocabulary:
 | Category | Meaning |
 | --- | --- |
 | `PARSE`, `VOCAB`, `MODEL`, `PROFILE` | section/link, declaration, model, or selected-logic error |
+| `DEDUCTION/STATE` | source-located unfinished deduction and editing guidance |
 | `CHECK/ACCEPTED`, `CHECK/REJECTED` | original controlled deduction result |
 | `RECHECK/ACCEPTED`, `RECHECK/REJECTED` | preserved deduction result in the alternative environment |
 | `ALTERNATIVE/INCONSISTENCY` | Lean checked an explicit direct or chained contradiction |
@@ -359,6 +412,14 @@ stable codes, accepted/rejected lifecycle messages, and exact relative source
 ranges without matching Lean's rendered elaboration errors.
 `Tests/EvidenceOutcomes.lean` checks the concise default copy separately from
 the retained technical status and evidence fields.
+`Tests/DeductionState.lean` checks CoreLogic, ModalK, and Counterfactual state
+data; accepted and rejected draft-prefix behavior; source-range preservation;
+exact controlled-step payloads; and versioned workspace edits.
+`Tests/InteractiveCodeAction.lean` drives Lean's language-server test runner at
+the continuation marker and checks the stock Quick Fix path.
+`Tests/InteractiveBareStepCodeAction.lean` reproduces `Step` followed by
+`End deduction` and asks the actual server for the panel widget and code
+actions at that incomplete marker.
 
 The implementation adopted three concepts after a read-only review of the
 Paper24 UFO Lean diagnostics: keep explanation outside the trusted certificate
@@ -381,9 +442,9 @@ counterfactuals. Those belong in profile-specific AST and elaboration
 extensions while retaining the shared
 notebook sections.
 
-No custom VS Code extension is required. The summary uses Lean's built-in
-panel-widget mechanism, while ordinary source-located Lean messages remain the
-compatibility baseline.
+No custom VS Code extension is required. Panels use Lean's built-in widget
+mechanism, actions use the standard LSP code-action provider, and ordinary
+source-located Lean messages remain the compatibility baseline.
 
 ## Evaluation plan
 

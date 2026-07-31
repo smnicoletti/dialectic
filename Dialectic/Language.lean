@@ -1,6 +1,8 @@
 import Dialectic.Language.Ast
 import Dialectic.Language.Diagnostic
+import Dialectic.Language.DeductionState
 import Dialectic.Language.SurfaceSyntax
+import Dialectic.Language.DeductionAction
 import Dialectic.Language.Frontend
 import Dialectic.Language.CoreLogic
 import Dialectic.Language.ModalK

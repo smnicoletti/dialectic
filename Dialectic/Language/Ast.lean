@@ -107,10 +107,28 @@ structure DeductionStep where
   conclusion : Name
   ref : Syntax
 
+inductive DeductionDraftMarker where
+  | continueDeduction
+  | chooseStep
+  deriving Repr, Inhabited, BEq, DecidableEq
+
 structure Deduction where
   name : Name
   steps : Array DeductionStep
+  intendedConclusion? : Option Name := none
+  stateRef? : Option Syntax := none
+  draftMarker : DeductionDraftMarker := .continueDeduction
   ref : Syntax
+
+def Deduction.isIncomplete (deduction : Deduction) : Bool :=
+  deduction.stateRef?.isSome
+
+def Deduction.target? (deduction : Deduction) : Option Name :=
+  deduction.intendedConclusion? <|>
+    deduction.steps.back?.map (·.conclusion)
+
+def Deduction.isChoosingStep (deduction : Deduction) : Bool :=
+  deduction.isIncomplete && deduction.draftMarker == .chooseStep
 
 private def pushNameUnique (names : Array Name) (name : Name) : Array Name :=
   if names.contains name then names else names.push name

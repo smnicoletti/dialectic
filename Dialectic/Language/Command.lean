@@ -3,6 +3,8 @@ import Dialectic.Language.CoreLogic
 import Dialectic.Language.ModalK
 import Dialectic.Language.Counterfactual
 import Dialectic.Language.Diagnostic
+import Dialectic.Language.DeductionState
+import Dialectic.Language.DeductionAction
 
 namespace Dialectic
 
@@ -265,6 +267,26 @@ private def validateNotebook (notebook : Notebook) : CommandElabM Unit := do
   for proofData in notebook.«original».deductions do
     ensureUnique .parseSection "Step" <|
       proofData.steps.map fun step => (step.name, step.ref)
+    if proofData.isIncomplete then
+      if let Option.some intendedConclusion := proofData.intendedConclusion? then
+        unless notebook.«original».claims.any (fun claimData =>
+            claimData.name == intendedConclusion) do
+          throwDiagnosticAt .parseSection
+            (proofData.stateRef?.getD proofData.ref)
+            m!"unfinished Deduction '{proofData.name}' intends undeclared Claim \
+               '{intendedConclusion}'"
+      else unless proofData.isChoosingStep do
+        throwDiagnosticAt .parseSection proofData.ref
+          "an unfinished Deduction must name its Goal"
+    else if let Option.some intendedConclusion :=
+        proofData.intendedConclusion? then
+      let finalConclusion ← proofData.steps.back?.map (·.conclusion) |>.getDM <|
+        throwDiagnosticAt .parseSection proofData.ref
+          "a completed Goal deduction must contain a Step"
+      unless finalConclusion == intendedConclusion do
+        throwDiagnosticAt .parseSection proofData.ref
+          m!"Deduction '{proofData.name}' ends at '{finalConclusion}', but its \
+             Goal is '{intendedConclusion}'"
     let mut available :=
       notebook.«original».claims.foldl (init := #[]) fun names claimData =>
         names.push claimData.name
@@ -329,11 +351,12 @@ private def validateNotebook (notebook : Notebook) : CommandElabM Unit := do
     let selected? := notebook.«original».deductions.find? fun proofData =>
       proofData.name == notebook.«alternative».recheck
     if let Option.some selected := selected? then
-      let finalTarget? := selected.steps.back?.map (·.conclusion)
-      unless finalTarget? == Option.some certificate.target do
-        throwDiagnosticAt .nonEntailment certificate.targetRef
-          m!"Countermodel target '{certificate.target}' must be the final target \
-             of rechecked Deduction '{selected.name}'"
+      let finalTarget? := selected.target?
+      if finalTarget?.isSome then
+        unless finalTarget? == Option.some certificate.target do
+          throwDiagnosticAt .nonEntailment certificate.targetRef
+            m!"Countermodel target '{certificate.target}' must be the final target \
+               of rechecked Deduction '{selected.name}'"
 
   if let Option.some certificate := notebook.«alternative».modalCountermodel? then
     throwDiagnosticAt .parseSection certificate.ref
@@ -367,11 +390,12 @@ private def validateNotebook (notebook : Notebook) : CommandElabM Unit := do
     let selected? := notebook.«original».deductions.find? fun proofData =>
       proofData.name == notebook.«alternative».recheck
     if let Option.some selected := selected? then
-      let finalTarget? := selected.steps.back?.map (·.conclusion)
-      unless finalTarget? == Option.some analysis.target do
-        throwDiagnosticAt .nonEntailment analysis.targetRef
-          m!"Model analysis target '{analysis.target}' must be the final target \
-             of rechecked Deduction '{selected.name}'"
+      let finalTarget? := selected.target?
+      if finalTarget?.isSome then
+        unless finalTarget? == Option.some analysis.target do
+          throwDiagnosticAt .nonEntailment analysis.targetRef
+            m!"Model analysis target '{analysis.target}' must be the final target \
+               of rechecked Deduction '{selected.name}'"
 
   let certificateCount :=
     (if notebook.«alternative».countermodel?.isSome then 1 else 0) +
@@ -524,6 +548,48 @@ meta def elabCnlArgument : CommandElab := fun stx => do
     | Option.some proofData => pure proofData
     | Option.none => throwErrorAt notebook.«alternative».recheckRef
         "internal validated-deduction lookup failure"
+  if selectedDeduction.isIncomplete then
+    let draftStatus ←
+      if selectedDeduction.steps.isEmpty then
+        pure DeductionStatus.accepted
+      else
+        liftTermElabM <| match notebook.«profile» with
+        | `CoreLogic =>
+            CoreLogic.checkDeduction notebook.«vocabulary» notebook.«original»
+              selectedDeduction
+        | `ModalK =>
+            ModalK.checkDeduction notebook.«vocabulary» notebook.«original»
+              selectedDeduction
+        | `Counterfactual =>
+            Counterfactual.checkDeduction notebook.«vocabulary»
+              notebook.«original» selectedDeduction
+        | _ => throwError "internal profile dispatch failure"
+    let state :=
+      deductionStateData notebook selectedDeduction
+        (draftStatus == .accepted)
+    let stateRef := selectedDeduction.stateRef?.getD selectedDeduction.ref
+    if draftStatus == .rejected then
+      logErrorAt selectedDeduction.ref
+        (diagnostic .deductionRejected
+          m!"A written draft Step is not accepted under the \
+              {notebook.«profile»} profile. Its result is not available to later \
+              suggestions.")
+    if selectedDeduction.isChoosingStep then
+      logInfoAt stateRef
+        (diagnostic .deductionState
+          m!"Choose the next deduction step. Select a supported next move in the \
+              Infoview or Quick Fix menu. Suggestions are not checked proof \
+              steps.")
+    else
+      logInfoAt stateRef
+        (diagnostic .deductionState
+          m!"Deduction '{state.deduction}' is unfinished. Intended conclusion: \
+              {state.target}. The Infoview shows premises, established steps, and \
+              profile-appropriate next moves. Suggestions are not checked proof \
+              steps.")
+    recordDeductionEditActions selectedDeduction state
+    saveDeductionStatePanel selectedDeduction state
+    return
   let originalStatus ← liftTermElabM <| match notebook.«profile» with
     | `CoreLogic =>
         CoreLogic.checkDeduction notebook.«vocabulary» notebook.«original»
