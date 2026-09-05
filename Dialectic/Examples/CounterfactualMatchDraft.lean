@@ -39,7 +39,7 @@ Model DampMatchModel
 End model
 
 Source LewisMatchScenario
-  Citation "Original bounded reconstruction informed by David Lewis, Counterfactuals, Blackwell, 1973, pp. 1-2; no sentence below is a quotation"
+  Citation "Original bounded reconstruction informed by David Lewis, Counterfactuals, Blackwell, 1973, pp. 1-2"
   Location "opening discussion of counterfactual conditionals, represented by an original match scenario"
   Sentence 1 "Had the match been struck, it would have lit."
   Sentence 2 "Had it lit, its flame would have been visible."

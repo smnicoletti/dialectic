@@ -6,8 +6,9 @@ deduction-state guidance and versioned editor actions.
 
 ## Purpose and verification boundary
 
-The language supports readable reconstruction and comparison of philosophical
-arguments while Lean verifies only the explicitly declared deductive core.
+The language gives students a readable practice environment for reconstructing
+and comparing philosophical arguments. Lean verifies only the explicitly
+declared deductive core.
 Every reported result must preserve this boundary:
 
 > Lean acceptance establishes derivability under the selected logic profile,
@@ -21,52 +22,53 @@ be non-typable after a change; this is not general non-derivability.
 
 ## Executable notebook contract
 
-`Examples/GalileoShip.lean` is the primary CoreLogic specimen:
+`Examples/CorroboratedTestimony.lean` is the primary CoreLogic teaching
+notebook. Its source is an invented classroom exercise:
 
 ```text
-Argument GalileoShip
+Argument CorroboratedTestimony
 Logic profile CoreLogic
-  Description "constructive unary-predicate reasoning over an explicit reconstruction"
+  Description "constructive unary-predicate practice"
 End logic
 
 Vocabulary
-  Type Trial called trial
-  Predicate describedBelowDeck describes Trial
-  Predicate satisfiesStipulations describes Trial
-  Predicate sameInternalOutcome describes Trial
-  Predicate nonDiscriminating describes Trial
+  Type Report called report
+  Predicate independentlyCorroborated describes Report
+  Predicate responsiblyAssessed describes Report
+  Predicate credible describes Report
+  Predicate primaFacieWarranting describes Report
 End vocabulary
 
-Source GalileoShipPassage
-  Citation "Galileo Galilei, Dialogue, Second Day; original paraphrases"
-  Location "the enclosed below-decks ship comparison"
-  Sentence 1 "The described trials satisfy the stipulated conditions."
+Source WorkshopScenario
+  Citation "Invented classroom scenario for Dialectic"
+  Location "Corroborated-testimony exercise, sentences 1-5"
+  Sentence 1 "Every report supported by independent sources is responsibly assessed."
   ...
 End source
 
 Reconstruction Original
-  Claim P1 from GalileoShipPassage sentence 1
-    Paraphrase "Every described trial satisfies the stipulations."
-    Formal meaning Every describedBelowDeck trial is satisfiesStipulations
+  Claim P1 from WorkshopScenario sentence 1
+    Paraphrase "Every independently corroborated report is responsibly assessed."
+    Formal meaning Every independentlyCorroborated report is responsiblyAssessed
   End claim
   ...
-  Deduction ShipComparison
+  Deduction TestimonyWarrant
     Goal Conclusion
-    Step OutcomeBridge
-      From P1 and P2 conclude DescribedOutcome
-    Step DiscriminationBridge
-      From DescribedOutcome and P3 conclude Conclusion
+    Step CredibilityFollows
+      From P1 and P2 conclude CredibilityBridge
+    Step ConclusionFollows
+      From CredibilityBridge and P3 conclude Conclusion
   End deduction
 End reconstruction
 
-Alternative RestrictedStipulation based on Original
+Alternative LimitedCorroboration based on Original
   Change P1
-    Original meaning Every describedBelowDeck trial is satisfiesStipulations
-    Alternative meaning Some describedBelowDeck trial is satisfiesStipulations
+    Original meaning Every independentlyCorroborated report is responsiblyAssessed
+    Alternative meaning Some independentlyCorroborated report is responsiblyAssessed
   End change
-  Recheck the same deduction ShipComparison
-  Objection ScopeOfIsolation about P1
-    Statement "The stipulation may govern only the successfully idealized trials."
+  Recheck the same deduction TestimonyWarrant
+  Objection ScopeOfCorroboration about P1
+    Statement "The exercise may support one report without supporting the universal premise."
   End objection
 End alternative
 End argument
@@ -352,7 +354,7 @@ Negative Lean tests exercise cross-profile keywords, missing source
 locations, undeclared predicates, and incompatible noun aliases. Positive
 tests exercise multi-step CoreLogic composition, a directly contradictory
 and a chained contradictory CoreLogic alternative, one- and two-individual
-finite countermodels, the Galileo ship reconstruction, ModalK box modus
+finite countermodels, the corroborated-testimony exercise, ModalK box modus
 ponens with finite Kripke model analysis, and bounded counterfactual
 consequence with actual/selected-situation model analysis.
 
@@ -419,7 +421,8 @@ exact controlled-step payloads; and versioned workspace edits.
 the continuation marker and checks the stock Quick Fix path.
 `Tests/InteractiveBareStepCodeAction.lean` reproduces `Step` followed by
 `End deduction` and asks the actual server for the panel widget and code
-actions at that incomplete marker.
+actions at that incomplete marker. `Tests/LanguageServerRunner.lean` provides
+the executable entry point for both requests.
 
 The implementation adopted three concepts after a read-only review of the
 Paper24 UFO Lean diagnostics: keep explanation outside the trusted certificate
@@ -446,20 +449,34 @@ No custom VS Code extension is required. Panels use Lean's built-in widget
 mechanism, actions use the standard LSP code-action provider, and ordinary
 source-located Lean messages remain the compatibility baseline.
 
-## Evaluation plan
+## Pedagogical progression and evaluation
 
-The records in `CORPUS.md` cover Aquinas, Galileo, Russell, Gettier, Plantinga,
-and Lewis. Galileo, Gettier, Plantinga, and Lewis have bounded executable
-examples. Aquinas and Russell remain design targets. Each case is evaluated
-on:
+The exercises assume basic familiarity with premises, conclusions, and
+alternative reconstructions, but no Lean experience. They progress through
+vocabulary, source links, controlled meanings, explicit deduction steps, live
+guidance, assumption revision, inconsistency, and countermodels. Alternative
+reconstructions provide practice in exposing and comparing commitments.
 
-1. readability by philosophers without Lean expertise;
-2. writability and quality of source-located correction messages;
-3. traceable source fidelity, with alternatives rather than a golden
-   translation;
-4. deductive correctness under the declared profile.
+The learning objectives are to identify the vocabulary of an argument, make
+formal-meaning choices explicit, write named deductions, explain how a revision
+changes a proof, and state the verification boundary correctly. These are
+design objectives. The project has not measured student learning gains.
 
-Every case must preserve exact bibliographic provenance, identify supplied
-premises and modeling choices, and include at least one plausible alternative
-delta. Profile-gated cases remain explicitly unavailable until their own
-semantics exist; they are never routed through a different profile.
+The records in `CORPUS.md` separate invented teaching scenarios from bounded
+published-source exercises. Executable notebooks cover corroborated testimony,
+an invented algorithmic-accountability case, a K-level modal subargument, and
+a selected-situation counterfactual.
+Aquinas and Russell remain advanced profile-design targets.
+
+Future classroom evaluation must measure:
+
+1. whether students can read a notebook without Lean syntax;
+2. whether they can write and correct controlled meanings and deductions;
+3. whether they can identify supplied premises and reconstruction deltas; and
+4. whether they distinguish derivability, proof rejection, contradiction, and
+   certified non-entailment.
+
+Published-source exercises must preserve bibliographic provenance and passage
+boundaries. Every exercise must identify supplied premises and modeling
+choices. Profile-gated cases remain unavailable until their own semantics
+exist; Dialectic never routes them through another profile.

@@ -12,8 +12,8 @@ open Dialectic
 #guard CounterfactualMatch_DampMatch_deductionStatus == .rejected
 #guard CounterfactualMatch_DampMatch_nonEntailmentStatus == .certified
 
-#guard (Meaning.modalEvery `shipTrial `stable).render ==
-  "In every possible world shipTrial is stable"
+#guard (Meaning.modalEvery `sampleCase `stable).render ==
+  "In every possible world sampleCase is stable"
 #guard (Meaning.counterfactual `thisMatch `struck `lit).render ==
   "If it were the case that thisMatch is struck, then thisMatch is lit"
 

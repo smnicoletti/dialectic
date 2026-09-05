@@ -1,5 +1,5 @@
 import Dialectic.Language
-import Dialectic.Examples.GalileoShipDraft
+import Dialectic.Examples.CorroboratedTestimonyDraft
 
 open Dialectic
 open Lean Elab Command
@@ -63,12 +63,12 @@ private def notebook
 }
 
 private def coreDeduction : Dialectic.«Deduction» := {
-  name := `ShipComparison
+  name := `TestimonyWarrant
   steps := #[{
-    name := `OutcomeBridge
+    name := `CredibilityFollows
     left := `P1
     right := `P2
-    conclusion := `DescribedOutcome
+    conclusion := `CredibilityBridge
     ref := missing
   }]
   intendedConclusion? := Option.some `Conclusion
@@ -78,16 +78,16 @@ private def coreDeduction : Dialectic.«Deduction» := {
 
 private def coreNotebook : Notebook :=
   notebook `CoreLogic #[
-    mkTestClaim `P1 (.everyIs `described `trial `stipulated)
-      "Every described trial is stipulated." 1,
-    mkTestClaim `P2 (.everyIs `stipulated `trial `sameOutcome)
-      "Every stipulated trial has the same outcome." 2,
-    mkTestClaim `P3 (.everyIs `sameOutcome `trial `nonDiscriminating)
-      "Every same-outcome trial is non-discriminating." 3,
-    mkTestClaim `DescribedOutcome (.everyIs `described `trial `sameOutcome)
-      "Every described trial has the same outcome." 4,
-    mkTestClaim `Conclusion (.everyIs `described `trial `nonDiscriminating)
-      "Every described trial is non-discriminating." 5
+    mkTestClaim `P1 (.everyIs `corroborated `report `assessed)
+      "Every corroborated report is assessed." 1,
+    mkTestClaim `P2 (.everyIs `assessed `report `credible)
+      "Every assessed report is credible." 2,
+    mkTestClaim `P3 (.everyIs `credible `report `warranting)
+      "Every credible report is warranting." 3,
+    mkTestClaim `CredibilityBridge (.everyIs `corroborated `report `credible)
+      "Every corroborated report is credible." 4,
+    mkTestClaim `Conclusion (.everyIs `corroborated `report `warranting)
+      "Every corroborated report is warranting." 5
   ] coreDeduction
 
 private def coreState := deductionStateData coreNotebook coreDeduction
@@ -97,19 +97,19 @@ private def coreState := deductionStateData coreNotebook coreDeduction
 #guard coreState.targetSourceReference == "TestSource, sentence 5"
 #guard coreState.premises.map (·.name) == #[`P1, `P2, `P3]
 #guard coreState.establishedSteps == #[{
-  name := `OutcomeBridge
-  conclusion := `DescribedOutcome
-  paraphrase := "Every described trial has the same outcome."
+  name := `CredibilityFollows
+  conclusion := `CredibilityBridge
+  paraphrase := "Every corroborated report is credible."
   sourceReference := "TestSource, sentence 4"
 }]
 #guard coreState.suggestions.any fun suggestion =>
   suggestion.text ==
-    "Use DescribedOutcome and then P3 to establish Conclusion." &&
+    "Use CredibilityBridge and then P3 to establish Conclusion." &&
   suggestion.rule == "universal chain"
 #guard coreState.suggestions.any fun suggestion =>
   suggestion.stepName == `ConclusionFollows &&
   suggestion.replacement ==
-    "Step ConclusionFollows\n      From DescribedOutcome and P3 conclude \
+    "Step ConclusionFollows\n      From CredibilityBridge and P3 conclude \
      Conclusion"
 
 private def bareStepDeduction (name : Name) : Dialectic.«Deduction» := {

@@ -30,11 +30,11 @@ Keep changes narrow enough to review. A contribution should:
 - keep logic-specific constructs inside an explicit profile;
 - avoid presenting preserved-term rejection as general non-entailment.
 
-Public notebooks under `Dialectic/Examples/` must be grounded in or explicitly
-inspired by identifiable philosophical literature. Include a source record,
-bounded passage location, original paraphrases, and a clear note about what the
-formalization leaves unresolved. Synthetic cases belong under
-`Dialectic/Tests/Fixtures/`.
+Public notebooks under `Dialectic/Examples/` must be either clearly marked
+classroom scenarios or grounded in identifiable philosophical literature.
+Literature-based examples need a source record, bounded passage location,
+original paraphrases, and a clear account of what the formalization leaves
+unresolved. Synthetic diagnostic cases belong under `Dialectic/Tests/Fixtures/`.
 
 ## Documentation
 
@@ -68,5 +68,5 @@ existing copyright and license notices.
 
 For contribution or licensing questions, contact:
 
-- Stefano Maria Nicoletti — <stefano@duck.com>
+- Stefano M. Nicoletti — <stefano@duck.com>
 - Edoardo Putti — <edoardo.putti@gmail.com>

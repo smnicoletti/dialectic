@@ -35,7 +35,7 @@ Model OntologicalReading
 End model
 
 Source PlantingaModalArgument
-  Citation "Original bounded reconstruction inspired by Alvin Plantinga, The Nature of Necessity, Clarendon Press, 1974, chapter 10; no sentence below is a quotation"
+  Citation "Original bounded reconstruction inspired by Alvin Plantinga, The Nature of Necessity, Clarendon Press, 1974, chapter 10"
   Location "chapter 10, modal ontological argument; the S5-specific steps are excluded"
   Sentence 1 "In every possible world, maximal greatness implies existence."
   Sentence 2 "In every possible world, the candidate is maximally great."

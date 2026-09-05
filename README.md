@@ -1,6 +1,6 @@
 <h1 align="center">Dialectic</h1>
 
-<p align="center"><strong>A Lean-native controlled language for reconstructing philosophical arguments</strong></p>
+<p align="center"><strong>A Lean-native practice environment for formal argument reconstruction</strong></p>
 
 <p align="center">
   <a href="lean-toolchain"><img alt="Lean 4.32.1" src="https://img.shields.io/badge/Lean-4.32.1-0f4c81"></a>
@@ -9,445 +9,308 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=leanprover.lean4"><img alt="Standard Lean VS Code extension" src="https://img.shields.io/badge/editor-standard%20Lean%20VS%20Code-informational"></a>
 </p>
 
-<p align="center">
-  <a href="#quick-start">Quick start</a> ·
-  <a href="#reasoning-profiles">Reasoning profiles</a> ·
-  <a href="#philosophical-examples">Philosophical examples</a> ·
-  <a href="#alternatives-objections-and-negative-evidence">Diagnostics</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
-</p>
-
-Dialectic notebooks keep source provenance, paraphrases, controlled formal
-meanings, deductions, alternatives, and objections in one readable Lean file.
-The standard Lean extension parses the notebook and reports source-located
-results in the VS Code Infoview.
+Dialectic helps students practice the move from an informal argument to an
+explicit, machine-checked reconstruction. A notebook keeps vocabulary, source
+sentences, controlled meanings, deduction steps, revisions, and objections in
+one readable Lean file. Students use the standard Lean extension for VS Code.
+They do not write Lean terms or tactics.
 
 > [!IMPORTANT]
-> **Verification boundary.** Dialectic verifies derivability under the selected
-> reconstruction and logic profile. It does not verify premise truth,
-> translation accuracy, or historical and interpretive fidelity.
+> **Verification boundary.** Dialectic checks whether a deduction follows from
+> the declared reconstruction and logic profile. It does not check whether the
+> premises are true or whether a reconstruction is the best reading of a text.
 
-| Author writes | Dialectic checks | Reader sees |
-| --- | --- | --- |
-| Source-linked claims, controlled meanings, and named deduction steps | Lean elaboration and kernel checking under one declared profile | Accepted deductions, explicit deltas, recheck results, and bounded negative evidence |
+## Background and prerequisites
 
-```text
-Source passage → Paraphrase → Controlled meaning → Lean check → Infoview result
-                       ↘ Interpretation choices and objections remain visible
-```
+The exercises assume basic familiarity with premises, conclusions, suppressed
+assumptions, and alternative reconstructions. No Lean experience is required.
+
+Students need:
+
+- Lean `4.32.1` through the project toolchain;
+- VS Code or VSCodium with the standard **Lean 4** extension; and
+- this repository opened at its root, where `lakefile.lean` is located.
+
+## Learning objectives
+
+After the exercise sequence, a student can:
+
+1. declare the domain vocabulary of an argument;
+2. link each reconstructed claim to an identified source sentence;
+3. distinguish a paraphrase from its controlled formal meaning;
+4. write and check named deduction steps;
+5. revise an assumption and explain the resulting proof change;
+6. distinguish a rejected proof term from witnessed inconsistency and
+   certified non-entailment; and
+7. state what Lean checked without claiming that Lean settled the philosophy.
+
+These are design objectives. The repository does not yet contain evidence from
+a student study or measured learning gains.
 
 ## Quick start
 
-1. Install [Elan](https://github.com/leanprover/elan) and the standard Lean 4
-   VS Code extension.
-2. Open this directory as the VS Code folder. `lean-toolchain` pins Lean
-   4.32.1.
-3. Open one of the notebooks in `Dialectic/Examples/`.
-
-No Python program, external parser, generated Lean file, or custom editor
-extension is required.
-
-To check the complete project from a terminal:
+Build the project once:
 
 ```sh
 lake build
 ```
 
-## Notebook structure
+Then open
+[`CorroboratedTestimonyDraft.lean`](Dialectic/Examples/CorroboratedTestimonyDraft.lean)
+in VS Code. Place the cursor on `Continue deduction`. The Infoview shows the
+current deduction state and one profile-supported next move. Open the standard
+Quick Fix menu to insert the proposed controlled step. Lean checks the completed
+deduction after the edit.
 
-Every notebook has one logic profile and the following parsed sections:
+The completed notebook is
+[`CorroboratedTestimony.lean`](Dialectic/Examples/CorroboratedTestimony.lean).
+Its source is an invented classroom scenario.
+
+## Exercise progression
+
+### 1. Declare vocabulary and source material
+
+Every notebook declares its domain terms before it uses them:
 
 ```text
-import Dialectic.Language
-
-Argument GalileoShip
-
-Logic profile CoreLogic
-  Description "constructive unary reasoning"
-End logic
-
 Vocabulary
-  Type Trial called trial
-  Predicate describedBelowDeck describes Trial
-  Predicate satisfiesStipulations describes Trial
+  Type Report called report
+  Predicate independentlyCorroborated describes Report
+  Predicate responsiblyAssessed describes Report
+  Predicate credible describes Report
+  Predicate primaFacieWarranting describes Report
 End vocabulary
 
-Source GalileoShipPassage
-  Citation "Galileo Galilei, Dialogue, Second Day; original paraphrases"
-  Location "the enclosed below-decks ship comparison"
-  Sentence 1 "The described trials satisfy the stipulated conditions."
-  Sentence 2 "Trials satisfying those conditions have matching internal outcomes."
+Source WorkshopScenario
+  Citation "Invented classroom scenario for Dialectic"
+  Location "Corroborated-testimony exercise, sentences 1-5"
+  Sentence 1 "Every report supported by independent sources is responsibly assessed."
 End source
-
-Reconstruction Original
-  ...
-End reconstruction
-
-Alternative RestrictedStipulation based on Original
-  ...
-End alternative
-
-End argument
 ```
 
-`Vocabulary` declares the domain type, its readable noun, named objects, and
-predicates. `Source` records provenance and numbered sentences. A `Claim`
-connects one source sentence to a paraphrase and a controlled formal meaning.
-Lean reports undeclared vocabulary, wrong domains, missing source locations,
-and profile-specific syntax at the relevant source range.
+The vocabulary section is mandatory. Dialectic reports undeclared terms and
+incompatible uses at their source locations.
 
-## Guided deduction editing
+### 2. Choose a controlled meaning
 
-Start a deduction with a bare `Step` when you want Dialectic to show the
-currently supported moves:
+The paraphrase remains readable prose. The `Formal meaning` line states the
+precise interpretation used by the checker:
 
 ```text
-Deduction CounterfactualConsequence
+Claim P1 from WorkshopScenario sentence 1
+  Paraphrase "Every independently corroborated report is responsibly assessed."
+  Formal meaning Every independentlyCorroborated report is responsiblyAssessed
+End claim
+```
+
+Students can compare the prose with the quantifier and predicates chosen for
+the controlled meaning. A later alternative can change that meaning explicitly.
+
+### 3. Write a deduction with live guidance
+
+A bare `Step` is a valid draft marker:
+
+```text
+Deduction TestimonyWarrant
   Step
 End deduction
 ```
 
-This is a grammar-valid draft, not a malformed completed deduction. Place the
-cursor on `Step`. The standard Lean Infoview displays **Choose the next
-deduction step**, the declared claims and source references, and only the moves
-implemented by the selected profile. In
-[`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean),
-the standard Quick Fix inserts:
+At this marker, the Infoview shows **Choose the next deduction step**. It lists
+the declared claims and only the moves implemented by the selected profile.
+The Quick Fix inserts an explicit goal and a complete controlled step. It never
+inserts a Lean proof term.
+
+After one accepted step, use `Continue deduction`:
 
 ```text
-Goal Conclusion
-Step ConclusionFollows
-  From C1 and C2 conclude Conclusion
-```
-
-Lean then re-elaborates and checks the completed deduction. If no implemented
-move applies, the panel says so and offers no action.
-
-[`GalileoShipDraft.lean`](Dialectic/Examples/GalileoShipDraft.lean) shows a
-second editing mode for a deduction whose goal and accepted prefix are already
-written:
-
-```text
-Deduction ShipComparison
+Deduction TestimonyWarrant
   Goal Conclusion
-  Step OutcomeBridge
-    From P1 and P2 conclude DescribedOutcome
+  Step CredibilityFollows
+    From P1 and P2 conclude CredibilityBridge
   Continue deduction
 End deduction
 ```
 
-Place the cursor on `Continue deduction`. The Infoview displays a
-**Deduction state** with:
-
-- the selected profile and intended conclusion;
-- premises in scope, with paraphrases and source references;
-- results established by Lean-checked draft steps; and
-- the next moves implemented by that profile.
-
-For this draft, CoreLogic proposes:
+For this state, CoreLogic proposes:
 
 ```text
 Step ConclusionFollows
-  From DescribedOutcome and P3 conclude Conclusion
+  From CredibilityBridge and P3 conclude Conclusion
 ```
 
-The proposal is not a proof result. With the cursor still on
-`Continue deduction`, open the standard VS Code Quick Fix menu and choose
-`Dialectic: add Step ConclusionFollows`. Lean applies a versioned edit to that
-marker only. A step that reaches `Goal` closes the draft; Lean then
-re-elaborates and checks the completed deduction. An intermediate step retains
-`Continue deduction` for the next cycle.
+The proposed step becomes a checked result only after insertion and normal Lean
+re-elaboration. If no implemented move applies, the panel offers no action.
 
-The language server refuses a versioned edit after the document has changed.
-Re-elaboration computes a fresh state and fresh actions. If the current
-profile has no implemented move to the goal, the panel says so without
-claiming non-entailment. CoreLogic suggests supported universal chains,
-ModalK suggests box modus ponens, and Counterfactual suggests only its
-shared-selection consequence rule.
+### 4. Revise an assumption
 
-This interaction uses Lean's built-in Infoview, InfoTree, and code-action
-support. There is no custom VS Code extension and no button inside the panel:
-the actionable control is the editor's normal Quick Fix menu. Both the panel
-widget and action are attached to the source range of `Step` or
-`Continue deduction`, so they remain available while the enclosing deduction
-is incomplete but grammar-valid.
-
-## Reasoning profiles
-
-Each reconstruction selects exactly one profile. Dialectic never transfers a
-deduction silently between profiles.
-
-| Profile | Implemented argument form | Negative evidence |
-| --- | --- | --- |
-| `CoreLogic` | Constructive unary universal chains and existential claims | Chained contradiction witnesses and finite unary countermodels supplied in the notebook |
-| `ModalK` | Box modus ponens over an explicit finite Kripke model | Analysis of the declared model; no frame conditions or model synthesis |
-| `Counterfactual` | A bounded consequence rule over selected counterfactual situations | Analysis of declared actual and counterfactual situations; no similarity search |
-
-### CoreLogic
-
-The Galileo example composes two visible universal steps:
+An alternative reconstruction records its exact change and rechecks the same
+deduction in a new environment:
 
 ```text
-Claim P1 from GalileoShipPassage sentence 1
-  Paraphrase "Every described below-decks trial satisfies the stipulations."
-  Formal meaning Every describedBelowDeck trial is satisfiesStipulations
-End claim
-
-Claim P2 from GalileoShipPassage sentence 2
-  Paraphrase "Every stipulated trial has the same internal outcome."
-  Formal meaning Every satisfiesStipulations trial is sameInternalOutcome
-End claim
-
-Claim DescribedOutcome from GalileoShipPassage sentence 4
-  Paraphrase "Every described trial has the same internal outcome."
-  Formal meaning Every describedBelowDeck trial is sameInternalOutcome
-End claim
-
-Deduction ShipComparison
-  Step OutcomeBridge
-    From P1 and P2 conclude DescribedOutcome
-  Step DiscriminationBridge
-    From DescribedOutcome and P3 conclude Conclusion
-End deduction
-```
-
-The supported meanings are:
-
-```text
-Every A noun is B
-Every A noun is not B
-No A noun is B
-Some A noun is B
-Some A noun is not B
-```
-
-An alternative gives an explicit semantic delta and rechecks the preserved
-deduction:
-
-```text
-Alternative RestrictedStipulation based on Original
+Alternative LimitedCorroboration based on Original
   Change P1
-    Original meaning Every describedBelowDeck trial is satisfiesStipulations
-    Alternative meaning Some describedBelowDeck trial is satisfiesStipulations
+    Original meaning Every independentlyCorroborated report is responsiblyAssessed
+    Alternative meaning Some independentlyCorroborated report is responsiblyAssessed
   End change
 
-  Recheck the same deduction ShipComparison
+  Recheck the same deduction TestimonyWarrant
+
+  Objection ScopeOfCorroboration about P1
+    Statement "The exercise may support one report without supporting the universal premise."
+  End objection
 End alternative
 ```
 
-Rejection means that these deduction steps no longer type-check under the
-alternative declarations. It does not show that the conclusion has no other
-proof.
+The change removes the universal premise required by the first step. Lean
+rejects the preserved deduction under the alternative. This result concerns
+that deduction term. It does not prove that no other deduction exists.
 
-Complete CoreLogic examples:
+### 5. Interpret negative evidence
 
-- [`GalileoShip.lean`](Dialectic/Examples/GalileoShip.lean), a bounded
-  reconstruction of Galileo's below-decks ship argument;
-- [`GettierCounterexample.lean`](Dialectic/Examples/GettierCounterexample.lean),
-  a coarse reconstruction of the justified-true-belief analysis and a finite
-  counterexample.
+Dialectic keeps five outcomes separate:
+
+| Result | What the result means |
+| --- | --- |
+| Preserved deduction rejected | The written deduction does not type-check under the alternative declarations. |
+| Contradiction found | The implemented CoreLogic analysis built and checked a contradiction from named claims. |
+| No contradiction found | The bounded analysis found no witness. This is not a consistency proof. |
+| Conclusion not supported | A checked finite model satisfies the alternative assumptions while the conclusion is false. |
+| Non-entailment not established | No accepted countermodel supports that conclusion. This is not an entailment proof. |
+
+Synthetic cases for diagnostic branches live in `Dialectic/Tests/Fixtures/`.
+They are tests, not public teaching examples.
+
+## Reasoning profiles
+
+Each reconstruction selects exactly one logic profile. The profile controls the
+meaning phrases, formal semantics, deduction rules, and negative evidence that
+Dialectic can check.
+
+### CoreLogic
+
+CoreLogic supports the current constructive unary fragment:
+
+```text
+Logic profile CoreLogic
+  Description "constructive unary-predicate practice"
+End logic
+
+Formal meaning Every credible report is primaFacieWarranting
+```
+
+It checks explicit universal chains and a bounded set of existential and
+negative unary forms. It can check named contradiction witnesses and
+author-supplied finite unary countermodels.
 
 ### ModalK
 
-Modal vocabulary describes domain objects. Worlds and accessibility belong to
-the model:
+ModalK uses explicit worlds and accessibility without extra frame conditions:
 
 ```text
-Vocabulary
-  Type Being called being
-  Object candidate is Being
-  Predicate maximallyGreat describes Being
-  Predicate existent describes Being
-End vocabulary
+Logic profile ModalK
+  Description "normal modal K with an explicit finite model"
+End logic
 
-Model OntologicalReading
-  Actual world actual
-    candidate is not maximallyGreat
-    candidate is not existent
-  End world
-  Possible world greatWorld
-    candidate is maximallyGreat
-    candidate is existent
-  End world
-  Accessibility
-    actual reaches greatWorld
-  End accessibility
-End model
-```
-
-Modal claims use profile-gated phrases:
-
-```text
-Formal meaning In every possible world if candidate is maximallyGreat then candidate is existent
 Formal meaning In every possible world candidate is maximallyGreat
-Formal meaning In some possible world candidate is maximallyGreat
+Formal meaning In every possible world if candidate is maximallyGreat then candidate is existent
 ```
 
-`Analyze model OntologicalReading for Conclusion` asks Dialectic whether the
-declared model satisfies the alternative assumptions while falsifying the
-conclusion. The author declares a model, not a countermodel. Dialectic
-classifies that model and asks Lean to check the generated evidence.
-
-`ModalK` assumes no reflexivity, symmetry, transitivity, or Euclidean frame
-condition. The current analyzer does not construct or search for models.
-
-See
-[`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean),
-a deliberately bounded K-level reconstruction inspired by Plantinga's modal
-argument. The notebook excludes the S5-specific structure of Plantinga's
-argument.
+The current deduction rule is box modus ponens. Model analysis can find a
+counterexample in the declared finite Kripke model. Dialectic does not assume
+reflexivity, symmetry, transitivity, or Euclideanness, and it does not synthesize
+models.
 
 ### Counterfactual
 
-Counterfactual notebooks distinguish the actual situation from selected
+The Counterfactual profile distinguishes the actual situation from selected
 counterfactual situations:
 
 ```text
-Vocabulary
-  Type Match called matchObject
-  Object thisMatch is Match
-  Predicate struck describes Match
-  Predicate lit describes Match
-End vocabulary
-
-Model DampMatchModel
-  Actual situation actual
-    thisMatch is not struck
-    thisMatch is not lit
-  End situation
-  Counterfactual situation dampCase
-    thisMatch is struck
-    thisMatch is not lit
-  End situation
-  Closest situations
-    actual selects dampCase
-  End closest situations
-End model
+Logic profile Counterfactual
+  Description "bounded selected-situation reasoning"
+End logic
 
 Formal meaning If it were the case that thisMatch is struck, then thisMatch is lit
 ```
 
-The profile evaluates a conditional at the declared selected situations. It
-does not treat the conditional as material implication, infer which situations
-are closest, or implement unrestricted Lewis/Stalnaker semantics.
+The profile checks one consequence rule over the same declared selection
+relation. It does not infer which situations are closest, compare similarity,
+or implement unrestricted Lewis or Stalnaker semantics.
 
-See
-[`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean), an
-original match scenario informed by David Lewis's *Counterfactuals*.
+## Teaching notebooks
 
-## Alternatives, objections, and negative evidence
+| Notebook | Profile | Teaching purpose |
+| --- | --- | --- |
+| [`CorroboratedTestimonyDraft.lean`](Dialectic/Examples/CorroboratedTestimonyDraft.lean) | `CoreLogic` | Continue a two-step reconstruction with the live state and Quick Fix. |
+| [`CorroboratedTestimony.lean`](Dialectic/Examples/CorroboratedTestimony.lean) | `CoreLogic` | Compare universal and existential readings of a premise. |
+| [`AlgorithmicAccountability.lean`](Dialectic/Examples/AlgorithmicAccountability.lean) | `CoreLogic` | Distinguish proof rejection from a checked two-decision countermodel. |
+| [`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean) | `ModalK` | Practice a bounded K-level modal subargument and inspect its limits. |
+| [`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean) | `Counterfactual` | Start a deduction from a bare `Step`. |
+| [`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean) | `Counterfactual` | Compare an original conditional with a damp-match alternative. |
 
-An `Alternative` changes one or more meanings, rechecks the same controlled
-deduction, and may attach an `Objection`. Original and alternative
-reconstructions receive separate Lean checks.
+The published-source notebooks use original paraphrases and bounded argument
+units. `CORPUS.md` records their provenance and scope.
 
-The Infoview separates four questions:
+## Implementation and validation
 
-| Display | Meaning |
-| --- | --- |
-| Green, deduction accepted | Lean accepted the declared steps under this reconstruction and profile |
-| Amber, preserved deduction rejected | The same steps are not typable after the displayed change |
-| Red, contradictory assumptions | The implemented check produced a Lean term of `False` from the alternative assumptions |
-| Purple, `⊭` | A checked model satisfies the alternative assumptions while falsifying the conclusion |
+Dialectic is a Lean language extension. Its parser builds a controlled notebook
+AST. The selected profile validates meanings and deduction forms. Lean then
+elaborates the generated propositions and proof terms and sends source-located
+messages to the standard Infoview.
 
-The absence of negative evidence has a weaker meaning:
-
-- **No contradiction found** means that the available check produced no
-  contradiction witness. It is not a consistency proof.
-- **Non-entailment not established** means that no accepted counterexample is
-  available. It is not an entailment proof.
-
-CoreLogic countermodels list finite individuals and a total truth assignment
-for every declared unary predicate. Modal and counterfactual notebooks instead
-describe a neutral model and request analysis. Technical evidence remains
-available in the collapsed Infoview section.
-
-## Philosophical examples
-
-The public examples contain original paraphrases and explicit provenance:
-
-| Notebook | Profile | Philosophical basis | Demonstrated comparison |
-| --- | --- | --- | --- |
-| [`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean) | `Counterfactual` | The Lewis-inspired match reconstruction while its deduction is being written | Bare-`Step` state and a Quick Fix that inserts an explicit goal and complete step |
-| [`GalileoShipDraft.lean`](Dialectic/Examples/GalileoShipDraft.lean) | `CoreLogic` | The same bounded Galileo reconstruction | Live deduction state and a version-checked Quick Fix for the final step |
-| [`GalileoShip.lean`](Dialectic/Examples/GalileoShip.lean) | `CoreLogic` | Galileo, *Dialogue Concerning the Two Chief World Systems*, Second Day | A scope change rejects the preserved two-step deduction |
-| [`GettierCounterexample.lean`](Dialectic/Examples/GettierCounterexample.lean) | `CoreLogic` | Gettier, "Is Justified True Belief Knowledge?", Case I | A finite countermodel certifies non-entailment |
-| [`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean) | `ModalK` | A bounded subargument inspired by Plantinga, *The Nature of Necessity*, chapter 10 | Possibility replaces necessity; declared-model analysis finds a counterexample |
-| [`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean) | `Counterfactual` | An original match scenario informed by Lewis, *Counterfactuals* | A damp-match reading rejects the preserved deduction and model analysis certifies non-entailment |
-
-None is presented as a settled translation. `CORPUS.md` records source
-locations, access status, intended formal features, and unresolved
-interpretive choices. Synthetic regression notebooks live under
-`Dialectic/Tests/Fixtures/`, not in the public examples.
-
-## Build and test
-
-From this directory:
+Run the complete library and test suite:
 
 ```sh
 lake build
 ```
 
-The default library imports every public example and every Lean-native
-regression test. Expected warnings in the example notebooks report rejected
-alternative deductions; they do not indicate a failed build.
+The default target imports every public example and every Lean-native test.
+Expected warnings show rejected alternatives; they do not indicate a failed
+build.
 
-`Dialectic/Tests/DeductionState.lean` checks state construction, profile-gated
-suggestions, source ranges, action payloads, and versioned workspace edits.
-`Dialectic/Tests/InteractiveCodeAction.lean` is a Lean language-server
-regression input for the real Quick Fix response.
-`Dialectic/Tests/InteractiveBareStepCodeAction.lean` asks the actual Lean
-server for both the panel widget and code actions at a bare `Step`.
+The language-server regressions check the live widget and the versioned editor
+action at `Step` and `Continue deduction`. The workspace edit targets only the
+current marker range and includes the current document version.
 
-The project layout is:
+Run both real language-server inputs with Lean's test runner:
+
+```sh
+lake env lean --run Dialectic/Tests/LanguageServerRunner.lean -p Dialectic/Tests/InteractiveCodeAction.lean
+lake env lean --run Dialectic/Tests/LanguageServerRunner.lean -p Dialectic/Tests/InteractiveBareStepCodeAction.lean
+```
+
+## Project layout
 
 ```text
 Dialectic/
-  Examples/        # source-grounded or source-inspired notebooks
-  Language/        # syntax, AST, validation, elaboration, profiles, diagnostics
+  Examples/        # public teaching notebooks
+  Language/        # syntax, AST, profiles, checking, diagnostics, editor actions
   Tests/
-    Fixtures/      # synthetic regression notebooks
-    *.lean         # guards and negative tests
+    Fixtures/      # synthetic diagnostic inputs
+    *.lean         # parser, semantics, diagnostic, and server regressions
 Dialectic.lean     # default build target
 DESIGN.md          # implementation and semantic design
-CORPUS.md          # source and evaluation records
+CORPUS.md          # teaching exercise and source records
 ```
-
-## Documentation
-
-| Document | Purpose |
-| --- | --- |
-| [README](README.md) | Author workflow, profiles, examples, and result interpretation |
-| [Design specification](DESIGN.md) | Grammar, semantics, architecture, diagnostics, and implementation limits |
-| [Calibration corpus](CORPUS.md) | Source provenance, passage boundaries, and evaluation cases |
-| [Contributing](CONTRIBUTING.md) | Development requirements, example policy, licensing, and contacts |
 
 ## Current limits
 
-- CoreLogic supports one domain type and unary-predicate argument forms.
-- Relations may be recorded in vocabulary, but the current deduction rules do
-  not reason over them.
-- ModalK supports box modus ponens and finite declared-model analysis only.
-- Counterfactual reasoning uses one explicit selection relation and a bounded
-  consequence rule.
-- Guided editing covers the deduction forms implemented by those three
-  profiles. It does not search for arbitrary proofs or invent new premises.
-- No profile provides unrestricted first-order quantifier alternation,
-  equality, description logic, temporal logic, deontic logic, epistemic logic,
-  modal model synthesis, or counterfactual similarity search.
-- Lean checks formal consequences of declared choices. Readers must still
-  assess the premises, paraphrases, source boundaries, and interpretation.
+- CoreLogic has one domain type and unary predicates.
+- Vocabulary can record relations, but current CoreLogic deductions do not use them.
+- ModalK supports box modus ponens and declared finite-model analysis.
+- Counterfactual reasoning uses one declared selection relation.
+- Dialectic does not search for arbitrary proofs or synthesize countermodels.
+- Identity, nested quantifiers, general cases, definitions, replies, and further
+  dialectical records remain planned extensions.
 
-## Contributing and license
+## Documentation and license
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before
-opening a pull request and run `lake build` before submission.
+| Document | Purpose |
+| --- | --- |
+| [Design specification](DESIGN.md) | Grammar, semantics, architecture, diagnostics, and limits |
+| [Teaching corpus](CORPUS.md) | Exercise records, source provenance, and evaluation plan |
+| [Contributing](CONTRIBUTING.md) | Development requirements and contacts |
 
-Dialectic is available under the
-[GNU Affero General Public License v3.0 or later](LICENSE). Separate commercial
-licensing may be available from the copyright holders.
-
-Project contacts:
-
-- Stefano Maria Nicoletti — <stefano@duck.com>
-- Edoardo Putti — <edoardo.putti@gmail.com>
+Dialectic is licensed under the GNU Affero General Public License,
+version 3 or later. See [LICENSE](LICENSE).

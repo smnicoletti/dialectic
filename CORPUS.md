@@ -1,6 +1,6 @@
-# Dialectic calibration corpus
+# Dialectic teaching corpus
 
-Status: source-grounded implementation test suite, not settled translations
+Status: progressive teaching exercises and bounded source records
 
 Access and provenance were checked on 2026-07-30. No primary-source file is
 retained in this repository. The records below contain bibliographic metadata,
@@ -31,11 +31,10 @@ silently replace them with these outlines.
   causal ordering cannot lack a first member, because removing a first cause
   removes intermediate causes and their effects. Therefore a first efficient
   cause must be posited; the passage then identifies this with God.
-- **Intended profile:** `CoreLogic` v1 for the explicit quantified/relational
-  skeleton, treating `efficientCause` and `dependsOn` as declared predicates
-  and exposing every bridge principle as a supplied assumption. A later causal
-  profile may be evaluated separately, never mixed into the same
-  reconstruction.
+- **Intended profile:** a future relational or causal profile with explicit
+  meanings for `efficientCause` and `dependsOn`. The current `CoreLogic`
+  fragment cannot encode the case's relational structure, so this record
+  remains blocked rather than being compiled through a unary approximation.
 - **Anticipated CNL features:** typed predicates, identity/non-self-causation,
   universal claims, contradiction, a named no-regress rule, supplied premises,
   definition/identification choices, and source links at clause level.
@@ -44,54 +43,26 @@ silently replace them with these outlines.
   the final identification is a definition, supplied bridge, or conclusion.
   Each becomes a separately named reconstruction with a visible delta.
 
-## GAL-SHIP
+## EDU-CORROBORATED-TESTIMONY
 
-- **Work and edition:** Galileo Galilei, *Dialogo sopra i due massimi sistemi
-  del mondo* (Florence: Giovanni Battista Landini, 1632), Second Day, the
-  below-decks ship thought experiment. A familiar English cross-locator is
-  Stillman Drake's *Dialogue Concerning the Two Chief World Systems*
-  (University of California Press, 1953), pp. 186-187; no Drake text is
-  retained.
-- **Stable records:** [Smithsonian Libraries 1632 copy](https://library.si.edu/digital-library/book/dialogodigalileo00gali)
-  (marked public domain/CC0 by the repository);
-  [Open Library record OL51470791M](https://openlibrary.org/books/OL51470791M);
-  [Stanford Encyclopedia of Philosophy, Galileo](https://plato.stanford.edu/entries/galileo/)
-  for the historical/methodological context of shared uniform motion.
-- **Access/retention:** The linked 1632 scan is identified by Smithsonian
-  Libraries as free of copyright restrictions. This project nevertheless
-  stores only metadata and an original outline. The 1953 translation is a
-  location aid, not retained corpus text.
-- **Passage boundary:** Second Day, Salviati's invitation to consider ordinary
-  phenomena below decks on a large ship, through the comparison between rest
-  and smooth uniform motion. Exclude the surrounding discussion of falling
-  bodies and later objections.
-- **Original plain-language outline:** Consider the listed trials inside the
-  ship under the stipulated isolation and motion conditions. Trials satisfying
-  those conditions have the same internal outcomes while the ship is at rest
-  and while it moves uniformly without fluctuation. The reconstruction makes
-  explicit a methodological bridge: matching internal outcomes do not
-  discriminate those two conditions. Therefore the described trials do not
-  distinguish rest from uniform shared motion within the stipulated setting.
-- **Intended profile:** implemented `CoreLogic` for a unary abstraction of the
-  methodological chain. `describedBelowDeck`, `satisfiesStipulations`,
-  `sameInternalOutcome`, and `nonDiscriminating` are declared predicates over
-  trials. The model does not encode trajectories, time, acceleration, causal
-  laws, or a general theory of observational equivalence.
-- **Anticipated CNL features:** cases, comparison of models, universal versus
-  restricted quantification over observations, exceptions, idealizing
-  assumptions, countermodels, and unresolved empirical questions.
-- **Likely alternatives:** observational equivalence versus the stronger claim
-  that motion is undetectable; which phenomena and observers are quantified
-  over; whether closure, uniformity, and absence of external interaction are
-  supplied premises or part of the modeled case.
-- **Executable status:** implemented in
-  `Dialectic/Examples/GalileoShip.lean` as a deliberately bounded
-  unary-predicate reconstruction with five source-linked claims and a
-  two-step deduction. The original composes the stipulation, shared-outcome,
-  and non-discrimination bridges. `RestrictedStipulation` changes only the
-  universal scope of the first premise to an existential reading; Lean then
-  rejects only the preserved deduction term. This example does not formalize
-  Galileo's full kinematics or establish a settled translation.
+- **Kind:** invented classroom scenario.
+- **Exercise boundary:** five sentences about independently corroborated
+  reports, responsible assessment, credibility, and prima facie warrant.
+- **Plain-language outline:** Every independently corroborated report is
+  responsibly assessed. Every responsibly assessed report is credible. Every
+  credible report provides prima facie warrant. Therefore every independently
+  corroborated report provides prima facie warrant.
+- **Profile:** implemented `CoreLogic`. The exercise uses four unary predicates
+  over reports and a two-step universal chain.
+- **Learning focus:** vocabulary declaration, source-to-meaning alignment,
+  intermediate claims, explicit deduction steps, and quantifier scope.
+- **Alternative:** `LimitedCorroboration` changes the first universal premise
+  to an existential claim. Lean then rejects the preserved deduction because
+  its first step requires the universal premise. This rejection does not prove
+  general non-entailment.
+- **Executable status:** completed and draft forms are in
+  `Dialectic/Examples/CorroboratedTestimony.lean` and
+  `Dialectic/Examples/CorroboratedTestimonyDraft.lean`.
 
 ## RUS-DENOTING
 
@@ -123,44 +94,29 @@ silently replace them with these outlines.
   quantificational versus presuppositional treatment; whether existence and
   uniqueness are asserted, presupposed, or modeled as definedness conditions.
 
-## GET-CASE-I
+## EDU-ALGORITHMIC-ACCOUNTABILITY
 
-- **Work and edition:** Edmund L. Gettier, "Is Justified True Belief
-  Knowledge?", *Analysis* 23(6) (1963), 121-123, DOI
-  `10.1093/analys/23.6.121`.
-- **Stable record:** [Oxford Academic publisher page](https://academic.oup.com/analysis/article-abstract/23/6/121/109949).
-- **Access/retention:** The publisher page identifies the article as
-  copyrighted and access-restricted. No article text, PDF, or quotation is
-  retained. This record contains only bibliographic metadata, locations, and
-  an original outline.
-- **Passage boundary:** The two preliminary principles about fallible
-  justification and justification preserved through known entailment on
-  p. 121, together with Case I on pp. 121-122. Case II and subsequent
-  literature are excluded from this unit.
-- **Original plain-language outline:** A subject has strong justification for
-  a claim that is in fact false. The subject validly infers a disjunction. An
-  unrelated disjunct happens to be true, so the inferred belief is justified
-  and true, while the case is presented as one in which the subject does not
-  know the disjunction. This supplies a candidate counterexample to the
-  sufficiency of justified true belief.
-- **Intended profile:** `CoreLogic` v1 for the case skeleton, treating
-  `justified`, `believes`, `true`, and `knows` as declared predicates and the
-  two preliminary principles as explicit rules/assumptions. A future epistemic
-  profile must be a separate reconstruction with its own semantics.
-- **Anticipated CNL features:** named rules, disjunction introduction,
-  counterexample witness, distinction between object-level truth and
-  justification, supplied premises, interpretation notes, and a competing
-  conclusion.
-- **Likely alternatives:** whether closure of justification is a rule or
-  premise; whether the false lemma is essential; whether the final
-  not-knowledge judgment is formalized as a premise, conclusion, or
-  dialectical annotation; later epistemic profiles for luck or defeasibility.
-- **Executable status:** `Dialectic/Examples/GettierCounterexample.lean`
-  implements a coarse unary abstraction of the justified-true-belief
-  sufficiency claim. A finite individual makes the alternative premises true
-  and the proposed knowledge conclusion false. The notebook records that it
-  does not formalize Gettier's disjunction, justification closure, or a theory
-  of knowledge.
+- **Kind:** invented contemporary classroom scenario. It is not a quotation,
+  statement of current law, or summary of a specific policy.
+- **Exercise boundary:** three sentences connect automated decisions,
+  high-impact decisions, and access to review.
+- **Plain-language outline:** Every automated decision in the exercise is high
+  impact. Every high-impact decision is reviewable. Therefore every automated
+  decision is reviewable.
+- **Profile:** implemented `CoreLogic`. The exercise uses three unary
+  predicates over decisions and one universal-composition step.
+- **Learning focus:** distinguish rejection of one preserved deduction from
+  certified non-entailment. The finite countermodel uses two decisions because
+  the existential alternative and the falsified universal conclusion need not
+  concern the same decision.
+- **Alternative:** `LimitedReviewPolicy` changes the universal review premise
+  to an existential one. Lean rejects the preserved composition. A supplied
+  two-decision model satisfies both alternative premises while falsifying the
+  conclusion, so Lean also accepts finite non-entailment evidence.
+- **Executable status:**
+  `Dialectic/Examples/AlgorithmicAccountability.lean` contains the completed
+  notebook. `Dialectic/Tests/AlgorithmicAccountability.lean` checks the four
+  reported statuses.
 
 ## PLA-MODAL-ONTOLOGICAL
 
@@ -188,8 +144,7 @@ silently replace them with these outlines.
   maximal greatness.
 - **Executable status:**
   `Dialectic/Examples/ModalOntologicalArgument.lean` checks the bounded
-  subargument and analyzes a declared finite K model. It is an inspired
-  reconstruction, not a transcription of Plantinga's proof.
+  subargument and analyzes a declared finite K model.
 
 ## LEW-MATCH
 
@@ -218,17 +173,17 @@ silently replace them with these outlines.
 
 ## Evaluation role
 
-These records become evaluation cases only after an edition-specific source
-span and a human-authored reconstruction are reviewed. None is a canonical
-philosophical translation. Galileo, Gettier, Plantinga, and Lewis now have
-bounded executable examples. Aquinas and Russell remain design targets:
+The invented scenarios are ready for interface practice. Published-source
+records become classroom exercises after review of the edition-specific span
+and human-authored reconstruction. Plantinga and Lewis have bounded executable
+examples. Aquinas and Russell remain advanced design targets:
 
 | Case | Positive implementation test | Required alternative or boundary test |
 | --- | --- | --- |
 | `AQ-SECOND-WAY` | Clause-level trace links and explicit supplied bridge premises | Compare two no-regress/identification readings; report all premise and definition deltas |
-| `GAL-SHIP` | **Implemented subset:** five source-linked claims and a two-step unary methodological chain | **Implemented:** narrowing the scope of the stipulation premise rejects the preserved term; kinematics and general observational equivalence remain unformalized |
+| `EDU-CORROBORATED-TESTIMONY` | **Implemented:** five linked claims and a two-step unary chain | **Implemented:** narrowing the first universal premise rejects the preserved term; no general non-entailment claim follows |
 | `RUS-DENOTING` | Multiple controlled meanings attached to one surface sentence | Reject description/scope keywords outside the declared descriptions profile; compare narrow/wide scope reconstructions |
-| `GET-CASE-I` | **Implemented abstraction:** a justified-true-belief bridge and a checked finite counterexample | Keep epistemic predicates uninterpreted in `CoreLogic`; require a separate reconstruction for any epistemic profile |
+| `EDU-ALGORITHMIC-ACCOUNTABILITY` | **Implemented:** a universal reviewability bridge and a checked two-decision countermodel | Separate rejection of the preserved term from finite-model non-entailment evidence |
 | `PLA-MODAL-ONTOLOGICAL` | **Implemented K-level subargument:** box modus ponens with visible premises | Record that Plantinga's full S5 reasoning lies outside the profile |
 | `LEW-MATCH` | **Implemented bounded rule:** consequence over one declared selection | Record that Dialectic performs no similarity ordering or closest-situation search |
 
@@ -236,7 +191,7 @@ Synthetic cases for diagnostic branches remain under
 `Dialectic/Tests/Fixtures/`. They are regression inputs, not public
 philosophical examples or evidence about a historical author.
 
-For every evaluation case, acceptance requires:
+For every published-source exercise, acceptance requires:
 
 1. exact source metadata and passage boundaries survive round-trip formatting;
 2. every formal declaration traces through a controlled meaning to a source
