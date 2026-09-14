@@ -96,8 +96,7 @@ silently replace them with these outlines.
 
 ## EDU-ALGORITHMIC-ACCOUNTABILITY
 
-- **Kind:** invented contemporary classroom scenario. It is not a quotation,
-  statement of current law, or summary of a specific policy.
+- **Kind:** contemporary classroom scenario.
 - **Exercise boundary:** three sentences connect automated decisions,
   high-impact decisions, and access to review.
 - **Plain-language outline:** Every automated decision in the exercise is high

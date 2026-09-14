@@ -54,13 +54,13 @@ private def notWitnessedPanel := inconsistencyPanelData {
 
 #guard notWitnessedPanel.heading == "No contradiction found"
 #guard notWitnessedPanel.sentence1 ==
-  "The checked assumptions did not produce a contradiction in the available test."
+  "The available check found no contradiction."
 #guard notWitnessedPanel.sentence2 ==
   "This does not show that the assumptions are consistent."
 #guard notWitnessedPanel.technicalStatus ==
   "InconsistencyStatus.notWitnessed"
 #guard notWitnessedPanel.technicalEvidence ==
-  "No existential witness conflicts with any predicate reachable through the implemented universal-rule closure over the alternative premises."
+  "No existential claim conflicts with a predicate reached through the available universal rules."
 
 private def certifiedPanel := nonEntailmentPanelData {
   status := .certified
@@ -77,15 +77,13 @@ private def certifiedPanel := nonEntailmentPanelData {
 }
 
 #guard certifiedPanel.icon == "⊭"
-#guard certifiedPanel.heading == "Conclusion not supported by this reconstruction"
+#guard certifiedPanel.heading == "Conclusion does not follow"
 #guard certifiedPanel.sentence1 ==
-  "A concrete model satisfies the alternative assumptions while the conclusion is false."
-#guard certifiedPanel.sentence2 ==
-  "Lean checked the generated evidence, so this establishes non-entailment for this reconstruction."
+  "A counterexample was found: all alternative assumptions hold, but the conclusion is false."
+#guard certifiedPanel.sentence2 == "Lean checked the counterexample."
 #guard certifiedPanel.reference ==
   "sampleBelief: testimonyBased holds, primaFacieJustified holds, warranted does not hold Target: Conclusion."
-#guard certifiedPanel.boundary ==
-  "This assesses the declared reconstruction and model, not the source text."
+#guard certifiedPanel.boundary == ""
 #guard certifiedPanel.technicalStatus == "NonEntailmentStatus.certified"
 
 private def notEstablishedPanel := nonEntailmentPanelData {
@@ -95,9 +93,8 @@ private def notEstablishedPanel := nonEntailmentPanelData {
 
 #guard notEstablishedPanel.heading == "Non-entailment not established"
 #guard notEstablishedPanel.sentence1 ==
-  "No checked counterexample shows all alternative assumptions holding while the conclusion is false."
-#guard notEstablishedPanel.boundary ==
-  "No entailment or non-entailment claim is made."
+  "No checked counterexample has all alternative assumptions true and the conclusion false."
+#guard notEstablishedPanel.boundary == ""
 #guard notEstablishedPanel.technicalStatus ==
   "NonEntailmentStatus.notEstablished"
 
@@ -105,11 +102,11 @@ private def coreCapabilities := capabilityHelpData `CoreLogic
 
 #guard coreCapabilities.heading == "What CoreLogic can check"
 #guard coreCapabilities.inconsistency ==
-  "Contradiction: an existential witness conflicting with a universal-rule chain."
+  "Contradiction: a witness conflicts with a chain of universal rules."
 #guard coreCapabilities.nonEntailment ==
-  "Non-entailment: a displayed finite set of individuals and predicate assignments."
+  "Non-entailment: a supplied finite counterexample."
 #guard coreCapabilities.technicalNonEntailment.contains
-  "assign every declared unary predicate at every individual"
+  "gives every declared unary predicate a value for each one"
 
 private def modalCapabilities := capabilityHelpData `ModalK
 
@@ -117,13 +114,13 @@ private def modalCapabilities := capabilityHelpData `ModalK
 #guard modalCapabilities.inconsistency ==
   "Contradiction: no check is implemented."
 #guard modalCapabilities.nonEntailment ==
-  "Non-entailment: analysis of a philosopher-authored finite Kripke model."
+  "Non-entailment: a supplied finite Kripke counterexample."
 
 private def counterfactualCapabilities := capabilityHelpData `Counterfactual
 
 #guard counterfactualCapabilities.heading == "What Counterfactual can check"
 #guard counterfactualCapabilities.nonEntailment ==
-  "Non-entailment: analysis of a philosopher-authored actual/counterfactual model."
+  "Non-entailment: a supplied counterfactual counterexample."
 #guard negativeEvidenceKind `ModalK .certified ==
   "model-analyzed finite Kripke counterexample"
 #guard negativeEvidenceKind `Counterfactual .certified ==
@@ -186,11 +183,9 @@ private def independentConflictPanel :=
   } independentRecheck
 
 #guard independentConflictPanel.sentence2 ==
-  "This contradiction comes from Claims in the alternative assumption set, not \
-   from rechecking the preserved deduction."
+  "The contradiction comes from the alternative assumptions, not the recheck."
 #guard independentConflictPanel.boundary ==
-  "The alternative reconstruction is internally inconsistent. The preserved \
-   deduction remains accepted because it does not use the changed claim."
+  "The deduction remains accepted because it does not use the changed claim."
 
 private def affectedReading : Dialectic.«Alternative» :=
   { independentConflict with
@@ -208,22 +203,27 @@ private def affectedRecheck :=
 
 #guard !affectedRecheck.unaffected
 #guard affectedRecheck.heading ==
-  "Preserved deduction rejected under this alternative."
+  "Deduction AdmissibilityBridge rejected under this alternative."
 #guard affectedRecheck.detail.contains "Changed Claim P1 is among them."
 
 #guard dialecticDiagnosticsWidget.javascript.contains
-  "Alternative reconstruction as a whole"
+  "Alternative reconstruction"
 #guard dialecticDiagnosticsWidget.javascript.contains
-  "Original deduction rechecked under the alternative"
+  "Contradictory assumptions"
+#guard dialecticDiagnosticsWidget.javascript.contains "Non-entailment"
 #guard dialecticDiagnosticsWidget.javascript.contains
-  "These two results concern the alternative assumptions considered together."
+  "Conclusion does not follow (counterexample found)"
+#guard dialecticDiagnosticsWidget.javascript.contains
+  "Original deduction under the alternative"
+#guard dialecticDiagnosticsWidget.javascript.contains
+  "These results concern the alternative assumptions."
 #guard dialecticDiagnosticsWidget.javascript.contains "Negative evidence"
 #guard dialecticDiagnosticsWidget.javascript.contains
-  "unavailable (recheck only)"
+  "No counterexample checked"
 #guard dialecticDiagnosticsWidget.javascript.contains
   "props.evidenceKind"
 #guard dialecticDiagnosticsWidget.javascript.contains
-  "This rejects only the preserved deduction. Non-entailment requires separate counterexample evidence."
+  "Only this deduction is rejected. Non-entailment needs a counterexample."
 #guard dialecticDiagnosticsWidget.javascript.contains "#a371f7"
 
 /--

@@ -14,7 +14,7 @@ Vocabulary
 End vocabulary
 
 Source ClassroomPolicyScenario
-  Citation "Invented contemporary classroom scenario for Dialectic; not a quotation or statement of current law"
+  Citation "Contemporary classroom scenario for Dialectic"
   Location "algorithmic accountability exercise, sentences 1–3"
   Sentence 1 "Every automated decision in the exercise is high impact."
   Sentence 2 "Every high-impact decision in the exercise is open to review."

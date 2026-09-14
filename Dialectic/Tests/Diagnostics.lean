@@ -63,7 +63,7 @@ End argument
 info: [DIALECTIC/CHECK/ACCEPTED] Original: Deduction 'LifecycleCheck' follows under this reconstruction and the CoreLogic profile. This does not assess the assumptions or source text.
 ---
 @ +41:29...43
-warning: [DIALECTIC/RECHECK/REJECTED] ExistentialPremise: Preserved deduction rejected under this alternative. Deduction LifecycleCheck uses Claims P1 and P2 in Step Bridge. Changed Claim P2 is among them. This rejects only the preserved deduction. Non-entailment requires separate counterexample evidence.
+warning: [DIALECTIC/RECHECK/REJECTED] ExistentialPremise: Deduction LifecycleCheck rejected under this alternative. Deduction LifecycleCheck uses Claims P1 and P2 in Step Bridge. Changed Claim P2 is among them. This rejects only the preserved deduction. Non-entailment requires separate counterexample evidence.
 -/
 #guard_msgs (info, warning, positions := true, substring := true) in
 Argument DiagnosticLifecycle
