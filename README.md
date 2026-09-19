@@ -1,66 +1,52 @@
 <h1 align="center">Dialectic</h1>
 
-<p align="center"><strong>A Lean-native practice environment for formal argument reconstruction</strong></p>
+<p align="center"><strong>A Lean-native language for formal argument reconstruction</strong></p>
 
 <p align="center">
   <a href="lean-toolchain"><img alt="Lean 4.32.1" src="https://img.shields.io/badge/Lean-4.32.1-0f4c81"></a>
   <a href="lakefile.lean"><img alt="Dialectic 0.1.0" src="https://img.shields.io/badge/Dialectic-0.1.0-555555"></a>
-  <a href="LICENSE"><img alt="AGPL-3.0-or-later" src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue"></a>
   <a href="https://marketplace.visualstudio.com/items?itemName=leanprover.lean4"><img alt="Standard Lean VS Code extension" src="https://img.shields.io/badge/editor-standard%20Lean%20VS%20Code-informational"></a>
 </p>
 
-Dialectic helps students practice the move from an informal argument to an
-explicit, machine-checked reconstruction. A notebook keeps vocabulary, source
-sentences, controlled meanings, deduction steps, revisions, and objections in
-one readable Lean file. Students use the standard Lean extension for VS Code.
-They do not write Lean terms or tactics.
+Dialectic is a Lean language extension for reconstructing arguments. A notebook
+keeps vocabulary, source sentences, controlled meanings, deduction steps,
+revisions, and objections in one readable Lean file. Use the standard Lean
+extension for VS Code. You do not write Lean terms or tactics.
 
 > [!IMPORTANT]
 > **Verification boundary.** Dialectic checks whether a deduction follows from
 > the declared reconstruction and logic profile. It does not check whether the
 > premises are true or whether a reconstruction is the best reading of a text.
 
-## Background and prerequisites
+## Prerequisites
 
-The exercises assume basic familiarity with premises, conclusions, suppressed
+Dialectic assumes basic familiarity with premises, conclusions, suppressed
 assumptions, and alternative reconstructions. No Lean experience is required.
 
-Students need:
+You need:
 
 - Lean `4.32.1` through the project toolchain;
 - VS Code or VSCodium with the standard **Lean 4** extension; and
 - this repository opened at its root, where `lakefile.lean` is located.
 
-## Learning objectives
-
-After the exercise sequence, a student can:
-
-1. declare the domain vocabulary of an argument;
-2. link each reconstructed claim to an identified source sentence;
-3. distinguish a paraphrase from its controlled formal meaning;
-4. write and check named deduction steps;
-5. revise an assumption and explain the resulting proof change;
-6. distinguish a rejected proof term from witnessed inconsistency and
-   certified non-entailment; and
-7. state what Lean checked without claiming that Lean settled the philosophy.
-
-These are design objectives. The repository does not yet contain evidence from
-a student study or measured learning gains.
-
 ## Quick start
 
-Build the project once:
+Install [elan](https://github.com/leanprover/elan) if Lean is not already
+available. Then clone and build Dialectic:
 
 ```sh
+git clone https://github.com/smnicoletti/dialectic.git
+cd dialectic
 lake build
 ```
 
-Then open
-[`CorroboratedTestimonyDraft.lean`](Dialectic/Examples/CorroboratedTestimonyDraft.lean)
-in VS Code. Place the cursor on `Continue deduction`. The Infoview shows the
-current deduction state and one profile-supported next move. Open the standard
-Quick Fix menu to insert the proposed controlled step. Lean checks the completed
-deduction after the edit.
+Open the repository root in VS Code or VSCodium. Install the standard **Lean 4**
+extension if it is not installed. Then open
+[`CorroboratedTestimonyDraft.lean`](Dialectic/Examples/CorroboratedTestimonyDraft.lean).
+
+Place the cursor on `Continue deduction`. The Infoview shows the current
+deduction state and one supported next move. Open the Quick Fix menu to insert
+the proposed step. Lean checks the deduction after the edit.
 
 The completed notebook is
 [`CorroboratedTestimony.lean`](Dialectic/Examples/CorroboratedTestimony.lean).
@@ -238,20 +224,6 @@ The profile checks one consequence rule over the same declared selection
 relation. It does not infer which situations are closest, compare similarity,
 or implement unrestricted Lewis or Stalnaker semantics.
 
-## Teaching notebooks
-
-| Notebook | Profile | Teaching purpose |
-| --- | --- | --- |
-| [`CorroboratedTestimonyDraft.lean`](Dialectic/Examples/CorroboratedTestimonyDraft.lean) | `CoreLogic` | Continue a two-step reconstruction with the live state and Quick Fix. |
-| [`CorroboratedTestimony.lean`](Dialectic/Examples/CorroboratedTestimony.lean) | `CoreLogic` | Compare universal and existential readings of a premise. |
-| [`AlgorithmicAccountability.lean`](Dialectic/Examples/AlgorithmicAccountability.lean) | `CoreLogic` | Distinguish proof rejection from a checked two-decision countermodel. |
-| [`ModalOntologicalArgument.lean`](Dialectic/Examples/ModalOntologicalArgument.lean) | `ModalK` | Practice a bounded K-level modal subargument and inspect its limits. |
-| [`CounterfactualMatchDraft.lean`](Dialectic/Examples/CounterfactualMatchDraft.lean) | `Counterfactual` | Start a deduction from a bare `Step`. |
-| [`CounterfactualMatch.lean`](Dialectic/Examples/CounterfactualMatch.lean) | `Counterfactual` | Compare an original conditional with a damp-match alternative. |
-
-The published-source notebooks use original paraphrases and bounded argument
-units. `CORPUS.md` records their provenance and scope.
-
 ## Implementation and validation
 
 Dialectic is a Lean language extension. Its parser builds a controlled notebook
@@ -284,14 +256,14 @@ lake env lean --run Dialectic/Tests/LanguageServerRunner.lean -p Dialectic/Tests
 
 ```text
 Dialectic/
-  Examples/        # public teaching notebooks
+  Examples/        # public argument notebooks
   Language/        # syntax, AST, profiles, checking, diagnostics, editor actions
   Tests/
     Fixtures/      # synthetic diagnostic inputs
     *.lean         # parser, semantics, diagnostic, and server regressions
 Dialectic.lean     # default build target
 DESIGN.md          # implementation and semantic design
-CORPUS.md          # teaching exercise and source records
+CONTRIBUTING.md    # contribution requirements
 ```
 
 ## Current limits
@@ -304,13 +276,9 @@ CORPUS.md          # teaching exercise and source records
 - Identity, nested quantifiers, general cases, definitions, replies, and further
   dialectical records remain planned extensions.
 
-## Documentation and license
+## Documentation
 
 | Document | Purpose |
 | --- | --- |
 | [Design specification](DESIGN.md) | Grammar, semantics, architecture, diagnostics, and limits |
-| [Teaching corpus](CORPUS.md) | Exercise records, source provenance, and evaluation plan |
 | [Contributing](CONTRIBUTING.md) | Development requirements and contacts |
-
-Dialectic is licensed under the GNU Affero General Public License,
-version 3 or later. See [LICENSE](LICENSE).

@@ -1,13 +1,11 @@
 import Dialectic.Language
 import Dialectic.Examples.CorroboratedTestimonyDraft
 import Dialectic.Examples.CorroboratedTestimony
-import Dialectic.Examples.AlgorithmicAccountability
 import Dialectic.Examples.ModalOntologicalArgument
 import Dialectic.Examples.CounterfactualMatch
 import Dialectic.Examples.CounterfactualMatchDraft
 import Dialectic.Tests.ResponsibleAction
 import Dialectic.Tests.CorroboratedTestimony
-import Dialectic.Tests.AlgorithmicAccountability
 import Dialectic.Tests.ModalK
 import Dialectic.Tests.Counterfactual
 import Dialectic.Tests.ExtendedProfileValidation

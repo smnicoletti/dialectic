@@ -462,10 +462,8 @@ formal-meaning choices explicit, write named deductions, explain how a revision
 changes a proof, and state the verification boundary correctly. These are
 design objectives. The project has not measured student learning gains.
 
-The records in `CORPUS.md` separate invented teaching scenarios from bounded
-published-source exercises. Executable notebooks cover corroborated testimony,
-an invented algorithmic-accountability case, a K-level modal subargument, and
-a selected-situation counterfactual.
+Executable notebooks cover corroborated testimony, a K-level modal subargument,
+and a selected-situation counterfactual.
 Aquinas and Russell remain advanced profile-design targets.
 
 Future classroom evaluation must measure:

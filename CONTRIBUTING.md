@@ -42,7 +42,6 @@ Update the relevant documents with the implementation:
 
 - `README.md` for author-facing syntax and workflow;
 - `DESIGN.md` for semantics, architecture, diagnostics, and limits;
-- `CORPUS.md` for philosophical source provenance and evaluation cases.
 
 Use direct, technical prose. Keep claims tied to implemented behavior or cited
 source material.
